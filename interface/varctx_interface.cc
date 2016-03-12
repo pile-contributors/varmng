@@ -1,26 +1,25 @@
 /**
- * @file varmng.cc
- * @brief Definitions for VarMng class.
+ * @file varctx_interface.cc
+ * @brief Definitions for IVarCtx class.
  * @author Nicu Tofan <nicu.tofan@gmail.com>
  * @copyright Copyright 2016 piles contributors. All rights reserved.
  * This file is released under the
  * [MIT License](http://opensource.org/licenses/mit-license.html)
  */
 
-#include "varmng.h"
+#include "varctx_interface.h"
 #include "varmng-private.h"
 
 /**
- * @class VarMng
+ * @class IVarCtx
  *
  * Detailed description.
  */
 
 /* ------------------------------------------------------------------------- */
 /**
- * Detailed description for constructor.
  */
-VarMng::VarMng()
+IVarCtx::IVarCtx ()
 {
     VARMNG_TRACE_ENTRY;
 
@@ -32,7 +31,7 @@ VarMng::VarMng()
 /**
  * Detailed description for destructor.
  */
-VarMng::~VarMng()
+IVarCtx::~IVarCtx()
 {
     VARMNG_TRACE_ENTRY;
 
