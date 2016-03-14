@@ -20,3 +20,16 @@ VarEval takes care of evaluating a list of contexts. A variable is allowed
 to appear in more than one context but it should only appear once in any
 given context. The final value of the variable is determined by iterating
 all contexts, with the last context having the final saying in the result.
+
+Manager class VarMng hosts a tree of definitions with a hidden
+node providing the management. It also hosts factory classes
+that provide means for creating definitions, values and contexts
+(by default the in-memory factory VarFactory is installed in the
+manager).
+
+Models for presenting the user with
+the tree of definitions (VarDefModel),
+the content of a context (VarCtxModel) and
+the results of an evaluation across multiple contexts (VarEvalModel)
+are provided. The factory methods in VarMng are used to
+create new elements when needed.

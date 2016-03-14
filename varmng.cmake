@@ -25,9 +25,14 @@ macro    (varmngInit
         "interface/varvalue_interface.h"
         "interface/vardef_interface.h"
 
+        "inmem/varfactory_inmem.h"
         "inmem/varctx_inmem.h"
         "inmem/vardef_inmem.h"
         "inmem/varvalue_inmem.h"
+
+        "models/varctx_model.h"
+        "models/vardef_model.h"
+        "models/vareval_model.h"
         )
 
     set(VARMNG_SOURCES
@@ -38,12 +43,20 @@ macro    (varmngInit
         "interface/varvalue_interface.cc"
         "interface/vardef_interface.cc"
 
+        "inmem/varfactory_inmem.cc"
         "inmem/varctx_inmem.cc"
         "inmem/vardef_inmem.cc"
         "inmem/varvalue_inmem.cc"
+
+        "models/varctx_model.cc"
+        "models/vardef_model.cc"
+        "models/vareval_model.cc"
         )
+
     set(VARMNG_QT_MODS
         "Core"
+        "Gui"
+        "Widgets"
         )
 
     pileSetSources(

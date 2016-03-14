@@ -49,6 +49,20 @@ public:
 
 private:
     IVarDef * def_; /**< the definition for this variable */
-};
+}; // IVarValue
+
+
+//! Factory class for variables associated with a value.
+class VARMNG_EXPORT IVarValueFactory {
+public:
+
+    //! Creates a value associated with a variable definition.
+    virtual IVarValue *
+    createVarValue (
+            IVarDef * def,
+            const QString & s_value) = 0;
+
+}; // IVarValueFactory
+
 
 #endif // GUARD_VARVALUE_INTERFACE_INCLUDE

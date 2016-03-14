@@ -29,26 +29,6 @@ public:
     //! Destructor.
     virtual ~VarDef ();
 
-    //! Change the name of the variable.
-    void
-    setVarName (
-            const QString &name);
-
-    //! Change the label of the variable.
-    void
-    setVarLabel (
-            const QString &label);
-
-    //! Change the description of the variable.
-    void
-    setVarDescription (
-            const QString &description);
-
-    //! Set the kids of a group.
-    void
-    setVarKids (
-            const QList<IVarDef *> &kids);
-
 
 
     /* == == == == == == == == == == == == == == == == == */
@@ -75,6 +55,25 @@ public:
         return description_;
     }
 
+    //! Change the name of the variable.
+    virtual bool
+    setVarName (
+            const QString &name);
+
+    //! Change the label of the variable.
+    virtual bool
+    setVarLabel (
+            const QString &label);
+
+    //! Change the description of the variable.
+    virtual bool
+    setVarDescription (
+            const QString &description);
+
+    //! Set the kids of a group.
+    virtual bool
+    setVarKids (
+            const QList<IVarDef *> &kids);
 
     //! The group where the variable belongs.
     virtual IVarDef *
@@ -82,11 +81,55 @@ public:
         return group_;
     }
 
+    //! Change the group where the variable belongs.
+    virtual bool
+    setVarGroup (IVarDef * value) {
+        group_ = value;
+        return true;
+    }
+
     //! The group where the variable belongs.
     virtual QList<IVarDef *>
     varKids () const {
         return kids_;
     }
+
+    //! The group where the variable belongs.
+    virtual IVarDef *
+    varKid (
+            int idx) const {
+        return kids_.at (idx);
+    }
+
+    //! Tell if this instance is a node or a leaf.
+    virtual bool
+    isVarNode () const {
+        return kids_.count () == 0;
+    }
+
+    //! Number of kids in this node (leafs return 0).
+    virtual int
+    varKidsCount () const {
+        return kids_.count ();
+    }
+
+    //! Insert a definition inside this node.
+    virtual bool
+    insertKidVarDef (
+            int position,
+            IVarDef * pdef);
+
+    //! Remove a definition from inside this node and delete it.
+    virtual bool
+    removeKidVarDef (
+            int position = -1,
+            IVarDef * pdef = NULL);
+
+    //! Remove a definition inside this node and return it to the caller.
+    virtual IVarDef *
+    takeKidVarDef (
+            int position = -1,
+            IVarDef * pdef = NULL);
 
     ///@}
     /* == == == == == == == == == == == == == == == == == */

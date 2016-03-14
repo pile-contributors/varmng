@@ -54,6 +54,20 @@ public:
 
 private:
 
-};
+}; // class IVarCtx
+
+
+//! Factory class for creating contexts for values associated with variables.
+class VARMNG_EXPORT IVarCtxFactory {
+public:
+
+    //! Creates a contexts.
+    virtual IVarCtx *
+    createVarCtx (
+            const QString & name = QString (),
+            const QString & label = QString ()) = 0;
+
+}; // class IVarCtxFactory
+
 
 #endif // GUARD_VARCTX_INTERFACE_INCLUDE
