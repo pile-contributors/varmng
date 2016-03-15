@@ -43,6 +43,13 @@ public:
     virtual QString
     varValue () const = 0;
 
+    //! Set the value in this instance.
+    virtual bool
+    setVarValue (
+            const QString & /* s_value */) {
+        return false;
+    }
+
     ///@}
     /* == == == == == == == == == == == == == == == == == */
 

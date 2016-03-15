@@ -16,8 +16,10 @@
 /**
  * @class VarDefModel
  *
- * Detailed description.
+ *
  */
+
+#define DEF_MODEL_COLUMN_COUNT 3
 
 /* ------------------------------------------------------------------------- */
 /**
@@ -104,7 +106,7 @@ bool VarDefModel::validateIndex (const QModelIndex &idx, IVarDef * pdef) const
         if (!idx.isValid())
             break;
 
-        if ((idx.column () < 0) || (idx.column () >= 3))
+        if ((idx.column () < 0) || (idx.column () >= DEF_MODEL_COLUMN_COUNT))
             break;
 
         IVarDef * def = pdef;
@@ -162,6 +164,14 @@ IVarDef * VarDefModel::insertVarDef (
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+void VarDefModel::reload()
+{
+    beginResetModel ();
+    endResetModel ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 QModelIndex VarDefModel::index (
         int row, int column, const QModelIndex &parent) const
 {
@@ -175,7 +185,7 @@ QModelIndex VarDefModel::index (
             break;
         }
 
-        if ((column < 0) || (column >= 3))
+        if ((column < 0) || (column >= DEF_MODEL_COLUMN_COUNT))
             break;
 
         if ((row < 0) || (row >= pdef->varKidsCount ()))
@@ -399,7 +409,7 @@ int VarDefModel::rowCount (const QModelIndex & parent) const
 /* ------------------------------------------------------------------------- */
 int VarDefModel::columnCount (const QModelIndex &) const
 {
-    return 3;
+    return DEF_MODEL_COLUMN_COUNT;
 }
 /* ========================================================================= */
 
@@ -503,7 +513,7 @@ QMimeData * VarDefModel::mimeData (const QModelIndexList &indexes) const
 /* ------------------------------------------------------------------------- */
 bool VarDefModel::canDropMimeData (
         const QMimeData *data, Qt::DropAction action,
-        int row, int /*column*/, const QModelIndex &parent) const
+        int /*row*/, int /*column*/, const QModelIndex &parent) const
 {
     if (!data || !(action == Qt::CopyAction || action == Qt::MoveAction))
         return false;

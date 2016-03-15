@@ -44,9 +44,10 @@ VarValue::~VarValue()
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-void VarValue::setVarValue (const QString &s_value)
+bool VarValue::setVarValue (const QString &s_value)
 {
     s_value_ = s_value;
+    return true;
 }
 /* ========================================================================= */
 

@@ -14,6 +14,8 @@
 #include <QString>
 #include <QList>
 
+class IVarDefFactory;
+
 //! Interface for variable (or group of variables) definition.
 class VARMNG_EXPORT IVarDef {
 
@@ -25,12 +27,46 @@ public:
     //! Destructor.
     virtual ~IVarDef ();
 
-    //! Insert a definition inside this node.
+    //! Append a definition inside this node.
     bool
     appendKidVarDef (
             IVarDef * pdef) {
         return insertKidVarDef (-1, pdef);
     }
+
+    //! Find a kid definition by its path and name (slash separated).
+    IVarDef *
+    findVarKid (
+            const QString & s_name,
+            IVarDefFactory * factory);
+
+    //! Find a kid definition by its path and name.
+    IVarDef *
+    findVarKid (
+            const QStringList & sl_path,
+            IVarDefFactory * factory);
+
+    //! Find a direct descendant of this instance by its name.
+    IVarDef *
+    findLocalVarKid (
+            const QString & s_name,
+            IVarDefFactory * factory);
+
+    //! Find a kid definition by its path and name (slash separated).
+    IVarDef *
+    findVarKid (
+            const QString & s_name) const;
+
+    //! Find a kid definition by its path and name.
+    IVarDef *
+    findVarKid (
+            const QStringList & sl_path) const;
+
+    //! Find a direct descendant of this instance by its name.
+    IVarDef *
+    findLocalVarKid (
+            const QString & s_name) const;
+
 
     /* == == == == == == == == == == == == == == == == == */
     /** @name IVarDef interface
@@ -93,13 +129,13 @@ public:
         return false;
     }
 
-    //! The group where the variable belongs.
+    //! The list of kids.
     virtual QList<IVarDef *>
     varKids () const {
         return QList<IVarDef *>();
     }
 
-    //! The group where the variable belongs.
+    //! A kid at a particular index.
     virtual IVarDef *
     varKid (
             int idx) const {

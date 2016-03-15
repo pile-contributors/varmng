@@ -27,11 +27,6 @@ public:
     //! Destructor.
     virtual ~VarValue ();
 
-    //! Change the value of the variable.
-    void
-    setVarValue (
-            const QString & s_value);
-
 
     /* == == == == == == == == == == == == == == == == == */
     /** @name IVarValue interface
@@ -44,6 +39,11 @@ public:
     varValue () const {
         return s_value_;
     }
+
+    //! Change the value of the variable.
+    virtual bool
+    setVarValue (
+            const QString & s_value);
 
     ///@}
     /* == == == == == == == == == == == == == == == == == */

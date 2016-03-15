@@ -78,10 +78,12 @@ bool VarDef::setVarDescription (const QString &description)
 /* ------------------------------------------------------------------------- */
 bool VarDef::setVarKids (const QList<IVarDef *> &kids)
 {
+    VARMNG_TRACE_ENTRY;
     kids_ = kids;
     foreach(IVarDef * iter, kids) {
         iter->setVarGroup (this);
     }
+    VARMNG_TRACE_EXIT;
     return true;
 }
 /* ========================================================================= */
@@ -89,6 +91,7 @@ bool VarDef::setVarKids (const QList<IVarDef *> &kids)
 /* ------------------------------------------------------------------------- */
 bool VarDef::insertKidVarDef (int position, IVarDef *pdef)
 {
+    VARMNG_TRACE_ENTRY;
     if (kids_.contains (pdef))
         return false;
 
@@ -99,6 +102,7 @@ bool VarDef::insertKidVarDef (int position, IVarDef *pdef)
     }
     pdef->setVarGroup (this);
 
+    VARMNG_TRACE_EXIT;
     return true;
 }
 /* ========================================================================= */
@@ -106,10 +110,12 @@ bool VarDef::insertKidVarDef (int position, IVarDef *pdef)
 /* ------------------------------------------------------------------------- */
 bool VarDef::removeKidVarDef (int position, IVarDef *pdef)
 {
+    VARMNG_TRACE_ENTRY;
     IVarDef * ivd = takeKidVarDef (position, pdef);
     if (ivd == NULL)
         return false;
     delete ivd;
+    VARMNG_TRACE_EXIT;
     return true;
 }
 /* ========================================================================= */
@@ -117,6 +123,7 @@ bool VarDef::removeKidVarDef (int position, IVarDef *pdef)
 /* ------------------------------------------------------------------------- */
 IVarDef * VarDef::takeKidVarDef (int position, IVarDef *pdef)
 {
+    VARMNG_TRACE_ENTRY;
     if (position < 0) {
         if (pdef == NULL)
             return NULL;
@@ -133,6 +140,7 @@ IVarDef * VarDef::takeKidVarDef (int position, IVarDef *pdef)
 
     kids_.removeAt (position);
     pdef->setVarGroup (NULL);
+    VARMNG_TRACE_EXIT;
     return pdef;
 }
 /* ========================================================================= */

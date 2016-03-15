@@ -15,6 +15,8 @@
 #include <varmng/vardef_interface.h>
 #include <varmng/varvalue_interface.h>
 
+class VarMng;
+
 //! Factory class that creates in memory instances.
 class VARMNG_EXPORT VarFactory  :
         public IVarCtxFactory,
@@ -43,6 +45,11 @@ public:
             const QString & name = QString (),
             const QString & label = QString ());
 
+
+    //! Creates a context for environment variables.
+    virtual IVarCtx *
+    createEnvVarCtx (
+            VarMng *mng);
 
     //! Get the one and only instance.
     static VarFactory *

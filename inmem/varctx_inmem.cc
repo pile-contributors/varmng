@@ -8,7 +8,10 @@
  */
 
 #include "varctx_inmem.h"
+#include "vardef_inmem.h"
+#include "varvalue_inmem.h"
 #include "varmng-private.h"
+#include "assert.h"
 
 /**
  * @class VarCtx
@@ -40,5 +43,61 @@ VarCtx::~VarCtx()
     VARMNG_TRACE_ENTRY;
 
     VARMNG_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool VarCtx::insertValue (int position, IVarValue *pdef)
+{
+    VARMNG_TRACE_ENTRY;
+    if (vars_.contains (pdef))
+        return false;
+
+    if ((position == -1) || (position >= vars_.count ())) {
+        vars_.append (pdef);
+    } else {
+        vars_.insert (position, pdef);
+    }
+
+    vars_.insert (position, pdef);
+    VARMNG_TRACE_EXIT;
+    return true;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool VarCtx::removeValue (int position, IVarValue *pdef)
+{
+    VARMNG_TRACE_ENTRY;
+    IVarValue * ivd = takeValue (position, pdef);
+    if (ivd == NULL)
+        return false;
+    delete ivd;
+    VARMNG_TRACE_EXIT;
+    return true;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+IVarValue * VarCtx::takeValue (int position, IVarValue *pdef)
+{
+    VARMNG_TRACE_ENTRY;
+    if (position < 0) {
+        if (pdef == NULL)
+            return NULL;
+        position = vars_.indexOf (pdef);
+        if (position == -1)
+            return NULL;
+    } else if (position >= vars_.count ()) {
+        return NULL;
+    } else if (pdef == NULL) {
+        pdef = vars_.at (position);
+    } else {
+        assert(vars_.at (position) == pdef);
+    }
+
+    vars_.removeAt (position);
+    VARMNG_TRACE_EXIT;
+    return pdef;
 }
 /* ========================================================================= */

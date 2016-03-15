@@ -14,7 +14,10 @@
 #include <QString>
 #include <QList>
 
+class IVarDef;
 class IVarValue;
+class IVarDefFactory;
+class IVarValueFactory;
 
 //! An evaluation context that may contain a number of variables and their values.
 class VARMNG_EXPORT IVarCtx {
@@ -26,6 +29,18 @@ public:
 
     //! Destructor.
     virtual ~IVarCtx ();
+
+    //! Append a value inside this context.
+    bool
+    appendValue (
+            IVarValue * value) {
+        return insertValue (-1, value);
+    }
+
+    //! Find an assigned variable by its name (or create a new one).
+    IVarValue *
+    findValue (
+            const QString & s_name);
 
 
     /* == == == == == == == == == == == == == == == == == */
@@ -47,6 +62,76 @@ public:
     //! The list of variables associated with this context.
     virtual QList<IVarValue *>
     contextVariables () const = 0;
+
+    //! The list of variables associated with this context.
+    virtual IVarValue *
+    value (
+            int idx) const {
+        return contextVariables ().at (idx);
+    }
+
+    //! The name of the context.
+    virtual bool
+    setContextName (
+            const QString & /* s_value */) {
+        return false;
+    }
+
+    //! The user visible name of the context (may be translated, for example).
+    virtual bool
+    setContextLabel (
+            const QString & /* s_value */) {
+        return false;
+    }
+
+    //! The list of variables associated with this context.
+    virtual bool
+    setContextVariables (
+            const QList<IVarValue *> & /* values */) {
+        return false;
+    }
+
+    //! Number of assigned variables in this context.
+    virtual int
+    valuesCount () const {
+        return contextVariables ().count ();
+    }
+
+    //! The index of a definition inside this context.
+    virtual int
+    valueIndex (
+            IVarDef * pdef) const;
+
+    //! The index of a value inside this context.
+    virtual int
+    valueIndex (
+            IVarValue * pdef) const {
+        return contextVariables ().indexOf (pdef);
+    }
+
+    //! Insert a value inside this context.
+    virtual bool
+    insertValue (
+            int /* position */,
+            IVarValue * /* pdef */) {
+        return false;
+    }
+
+    //! Remove a value from inside this context and delete it.
+    virtual bool
+    removeValue (
+            int /* position */ = -1,
+            IVarValue * /* pdef */ = NULL) {
+        return false;
+    }
+
+    //! Remove a value inside this context and return it to the caller.
+    virtual IVarValue *
+    takeValue (
+            int /* position */ = -1,
+            IVarValue * /* pdef */ = NULL) {
+        return NULL;
+    }
 
     ///@}
     /* == == == == == == == == == == == == == == == == == */

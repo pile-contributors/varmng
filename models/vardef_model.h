@@ -70,6 +70,9 @@ public:
             int row = -1,
             const QModelIndex & parent = QModelIndex ());
 
+    //! Reset the model.
+    void
+    reload ();
 
     /* == == == == == == == == == == == == == == == == */
     /** @name QAbstractItemModel

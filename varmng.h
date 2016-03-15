@@ -44,6 +44,12 @@ public:
         return def_root_.appendKidVarDef (def);
     }
 
+    //! Get the variable with this name; optionally,create if not found.
+    IVarDef *
+    getDefinition (
+            const QString & s_name,
+            bool b_create = false);
+
     //! Internal definition at the top of the hierarchy.
     VarDef *
     rootVarDef () {
@@ -65,11 +71,15 @@ public:
             IVarDef * def,
             const QString & s_value);
 
-    //! Creates a contexts.
+    //! Creates a context.
     IVarCtx *
     createVarCtx (
             const QString & name = QString (),
             const QString & label = QString ());
+
+    //! Creates and populates a context from environment variables.
+    IVarCtx *
+    createEnvVarCtx ();
 
 protected:
 

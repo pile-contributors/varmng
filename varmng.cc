@@ -10,11 +10,19 @@
 #include "varmng.h"
 #include "varmng-private.h"
 #include "inmem/varfactory_inmem.h"
+#include <QObject>
 
 /**
  * @class VarMng
  *
- * Detailed description.
+ * The manager class tracks definitions of variables and
+ * provides methods for adding, removing and listing
+ * them. Definitions must implement IVarDef interface.
+ *
+ * Creating new elements is based on a set of factories,
+ * each providing a specific type of object. By default
+ * the factories that create simple - in memory - objects
+ * are installed.
  */
 
 /* ------------------------------------------------------------------------- */
@@ -22,7 +30,7 @@
  * Detailed description for constructor.
  */
 VarMng::VarMng () :
-    def_root_(),
+    def_root_ (),
     value_factory_ (VarFactory::instance ()),
     context_factory_ (VarFactory::instance ()),
     def_factory_ (VarFactory::instance ())
@@ -37,11 +45,19 @@ VarMng::VarMng () :
 /**
  * Detailed description for destructor.
  */
-VarMng::~VarMng()
+VarMng::~VarMng ()
 {
     VARMNG_TRACE_ENTRY;
 
     VARMNG_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+IVarDef * VarMng::getDefinition (const QString & s_name, bool b_create)
+{
+    return def_root_.findVarKid (
+                s_name, b_create ? VarFactory::instance () : NULL);
 }
 /* ========================================================================= */
 
@@ -55,15 +71,22 @@ IVarDef *VarMng::createVarDef (
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-IVarValue *VarMng::createVarValue(IVarDef *def, const QString &s_value)
+IVarValue *VarMng::createVarValue (IVarDef *def, const QString &s_value)
 {
     return value_factory_->createVarValue (def, s_value);
 }
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-IVarCtx *VarMng::createVarCtx(const QString &name, const QString &label)
+IVarCtx *VarMng::createVarCtx (const QString &name, const QString &label)
 {
     return context_factory_->createVarCtx (name, label);
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+IVarCtx * VarMng::createEnvVarCtx ()
+{
+    return VarFactory::instance ()->createEnvVarCtx (this);
 }
 /* ========================================================================= */

@@ -19,6 +19,7 @@ QT_END_NAMESPACE
 
 class VarDef;
 class IVarValue;
+class IVarCtx;
 
 //! Evaluate the value of context based variables.
 class VARMNG_EXPORT VarCtxModel : public QAbstractItemModel {
@@ -27,10 +28,17 @@ public:
 
     //! Default constructor.
     VarCtxModel (
+            IVarCtx * context,
             QObject *parent = 0);
 
     //! Destructor.
     virtual ~VarCtxModel ();
+
+    //! The context that we're wrapping.
+    IVarCtx *
+    context () const {
+        return context_;
+    }
 
     //! Get the item that is selected in provided view.
     IVarValue *
@@ -50,7 +58,8 @@ public:
     //! Tell if an index is valid for this model.
     bool
     validateIndex (
-            const QModelIndex &idx) const;
+            const QModelIndex &idx,
+            IVarValue *pdef = NULL) const;
 
 
     /* == == == == == == == == == == == == == == == == */
@@ -109,6 +118,9 @@ public:
 
     ///@}
     /* == == == == == == == == == == == == == == == == */
+
+private:
+    IVarCtx * context_; /**< the context that we're wrapping */
 
 }; // class VarCtxModel
 
