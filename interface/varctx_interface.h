@@ -86,12 +86,17 @@ public:
     virtual QList<IVarValue *>
     contextVariables () const = 0;
 
-    //! The list of variables associated with this context.
+    //! The value at a particular index.
     virtual IVarValue *
     value (
             int idx) const {
         return contextVariables ().at (idx);
     }
+
+    //! The value for a definition.
+    virtual IVarValue *
+    value (
+            IVarDef * pdef) const;
 
     //! The name of the context.
     virtual bool
@@ -128,9 +133,7 @@ public:
     //! The index of a value inside this context.
     virtual int
     valueIndex (
-            IVarValue * pdef) const {
-        return contextVariables ().indexOf (pdef);
-    }
+            IVarValue * value) const;
 
     //! Insert a value inside this context.
     virtual bool

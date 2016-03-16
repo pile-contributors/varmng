@@ -9,19 +9,21 @@
 
 #include "vareval.h"
 #include "varmng-private.h"
+#include "interface/varctx_interface.h"
+#include "interface/vardef_interface.h"
+#include "interface/varvalue_interface.h"
 
 /**
  * @class VarEval
  *
- * Detailed description.
  */
 
 /* ------------------------------------------------------------------------- */
 /**
- * The pointer to the definition is stored internally and can be retrieved by
- * using the definition () method.
+ *
  */
-VarEval::VarEval ()
+VarEval::VarEval () :
+    ctx_list_ ()
 {
     VARMNG_TRACE_ENTRY;
 
@@ -31,12 +33,118 @@ VarEval::VarEval ()
 
 /* ------------------------------------------------------------------------- */
 /**
- * Detailed description for destructor.
  */
 VarEval::~VarEval()
 {
     VARMNG_TRACE_ENTRY;
 
     VARMNG_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+VarMng * VarEval::manager () const
+{
+    if (ctx_list_.isEmpty())
+        return NULL;
+    else
+        return ctx_list_.at (0)->manager ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool VarEval::insertCtx (int idx, IVarCtx *ctx)
+{
+    bool b_ret = false;
+    for (;;) {
+        if (ctx == NULL)
+            break;
+        if (ctx_list_.contains (ctx))
+            break;
+        ctx_list_.insert (idx, ctx);
+        b_ret = true;
+        break;
+    }
+    return b_ret;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+IVarCtx *VarEval::findCtxInst (const QString &s_name)
+{
+    foreach(IVarCtx * iter, ctx_list_) {
+        if (iter->contextName () == s_name) {
+            return iter;
+        }
+    }
+    return NULL;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+int VarEval::findCtx (const QString &s_name)
+{
+    int idx = 0;
+    foreach(IVarCtx * iter, ctx_list_) {
+        if (iter->contextName () == s_name) {
+            return idx;
+        }
+        ++idx;
+    }
+    return NULL;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+int VarEval::findCtx (IVarCtx *inst)
+{
+    return ctx_list_.indexOf (inst);
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+QList<IVarDef *> VarEval::collectDefinitions ()
+{
+    QList<IVarDef *> result;
+
+    foreach(IVarCtx * iter, ctx_list_) {
+        foreach(IVarValue * val, iter->contextVariables ()) {
+            IVarDef * def = val->definition();
+            if (!result.contains (def)) {
+                result.append (def);
+            }
+        }
+    }
+
+    return result;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+QMap<QString,QString> VarEval::collectValues ()
+{
+    return collectValues (collectDefinitions ());
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+QMap<QString,QString> VarEval::collectValues (
+        const QList<IVarDef *> &defs)
+{
+    QMap<QString,QString> result;
+
+    foreach(IVarDef * def, defs) {
+        QString s_result;
+        QString s_key = def->varName ();
+        foreach(IVarCtx * iter, ctx_list_) {
+            IVarValue * v = iter->value (def);
+            if (v != NULL) {
+                s_result = v->varValue ();
+            }
+        }
+        result.insert (s_key, s_result);
+    }
+
+    return result;
 }
 /* ========================================================================= */

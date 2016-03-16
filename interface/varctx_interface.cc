@@ -79,6 +79,18 @@ int IVarCtx::loadEnvVariables ()
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+IVarValue * IVarCtx::value (IVarDef *pdef) const
+{
+    foreach (IVarValue * val, contextVariables ()) {
+        if (val->definition () == pdef) {
+            return val;
+        }
+    }
+    return NULL;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 int IVarCtx::valueIndex (IVarDef *pdef) const
 {
     int i = 0;
@@ -89,6 +101,13 @@ int IVarCtx::valueIndex (IVarDef *pdef) const
         ++i;
     }
     return -1;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+int IVarCtx::valueIndex (IVarValue *value) const
+{
+    return contextVariables ().indexOf (value);
 }
 /* ========================================================================= */
 
