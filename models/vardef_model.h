@@ -23,7 +23,7 @@ class VarMng;
 
 //! Model for definitions available in a manager instance.
 class VARMNG_EXPORT VarDefModel : public QAbstractItemModel {
-
+    Q_OBJECT
 public:
 
     //! Default constructor.
@@ -175,6 +175,25 @@ public:
     ///@}
     /* == == == == == == == == == == == == == == == == */
 
+protected:
+
+    //! Encode data as application/x-vardef-explicit.
+    void
+    encodeDataExplicit (
+            const QModelIndexList &indexes,
+            QDataStream &stream) const;
+
+public:
+
+    //! Decode data encoded as application/x-vardef-explicit.
+    static bool
+    decodeDataExplicit (
+            QDataStream &stream,
+            QString & name,
+            QString & label,
+            QString & description,
+            QString & path);
+
 private:
 
 
@@ -185,6 +204,13 @@ private:
 
     QModelIndexList
     decodeData (
+            QDataStream &stream) const;
+
+    bool
+    decodeData (
+            int row,
+            int column,
+            const QModelIndex &parent,
             QDataStream &stream) const;
 
 private:

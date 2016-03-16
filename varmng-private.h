@@ -34,4 +34,13 @@
 static inline void black_hole (...)
 {}
 
+/**
+ * @def TMP_A
+ * @brief C style string from QString.
+ * @internal
+ */
+#ifndef TMP_A
+#   define TMP_A(__s__) __s__.toLatin1 ().constData ()
+#endif
+
 #endif // GUARD_VARMNG_PRIVATE_H_INCLUDE

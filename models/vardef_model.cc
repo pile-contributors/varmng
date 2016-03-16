@@ -10,6 +10,8 @@
 #include "vardef_model.h"
 #include "varmng-private.h"
 #include "../varmng.h"
+#include "../varmng-const.h"
+
 #include <QAbstractItemView>
 #include <QMimeData>
 
@@ -487,7 +489,7 @@ bool VarDefModel::moveRows (
 QStringList VarDefModel::mimeTypes() const
 {
     QStringList types;
-    types << QLatin1String("application/x-internal-row-based-move");
+    types << MIME_VARMNG_INTERNAL_ROW_MOVE << MIME_VARMNG_DEF;
     return types;
 }
 /* ========================================================================= */
@@ -500,12 +502,26 @@ QMimeData * VarDefModel::mimeData (const QModelIndexList &indexes) const
     QStringList types = mimeTypes ();
     if (types.isEmpty())
         return 0;
+
     QMimeData *data = new QMimeData ();
-    QString format = types.at (0);
-    QByteArray encoded;
-    QDataStream stream (&encoded, QIODevice::WriteOnly);
-    encodeData(indexes, stream);
-    data->setData(format, encoded);
+
+    {
+        QString format = MIME_VARMNG_INTERNAL_ROW_MOVE;
+        QByteArray encoded;
+        QDataStream stream (&encoded, QIODevice::WriteOnly);
+        encodeData(indexes, stream);
+        data->setData(format, encoded);
+    }
+
+    {
+        QString format = MIME_VARMNG_DEF;
+        QByteArray encoded;
+        QDataStream stream (&encoded, QIODevice::WriteOnly);
+        encodeDataExplicit (indexes, stream);
+        data->setData(format, encoded);
+    }
+
+
     return data;
 }
 /* ========================================================================= */
@@ -520,9 +536,10 @@ bool VarDefModel::canDropMimeData (
     QStringList types = mimeTypes();
     if (types.isEmpty())
         return false;
-    QString format = types.at(0);
-    if (!data->hasFormat(format))
+    QString format = MIME_VARMNG_INTERNAL_ROW_MOVE;
+    if (!data->hasFormat(format)) {
         return false;
+    }
     QByteArray encoded = data->data(format);
     QDataStream stream(&encoded, QIODevice::ReadOnly);
 
@@ -550,6 +567,42 @@ void VarDefModel::encodeData (
     QModelIndexList::ConstIterator it = indexes.begin();
     for (; it != indexes.end(); ++it)
         stream << (*it).row() << (*it).internalId ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void VarDefModel::encodeDataExplicit (
+        const QModelIndexList &indexes, QDataStream &stream) const
+{
+    QModelIndexList::ConstIterator it = indexes.begin();
+    for (; it != indexes.end(); ++it) {
+        IVarDef * pdestin = static_cast<IVarDef *>((*it).internalPointer());
+        stream << (*it).row()
+               << pdestin->varName ()
+               << pdestin->varLabel ()
+               << pdestin->varDescription ()
+               << pdestin->varPath ();
+    }
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool VarDefModel::decodeDataExplicit (
+        QDataStream &stream, QString &name, QString &label,
+        QString &description, QString &path)
+{
+    stream >> name >> label >> description >> path;
+    return true;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool VarDefModel::decodeData (
+        int /*row*/, int /*column*/, const QModelIndex &/*parent*/,
+        QDataStream &stream) const
+{
+    /*QModelIndexList result =*/ decodeData (stream);
+    return true;
 }
 /* ========================================================================= */
 
@@ -587,7 +640,7 @@ bool VarDefModel::dropMimeData (
     QStringList types = mimeTypes();
     if (types.isEmpty())
         return false;
-    QString format = types.at(0);
+    QString format = MIME_VARMNG_INTERNAL_ROW_MOVE;
     if (!data->hasFormat(format))
         return false;
     QByteArray encoded = data->data(format);

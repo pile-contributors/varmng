@@ -12,7 +12,12 @@
 #include "../interface/varvalue_interface.h"
 #include "../interface/vardef_interface.h"
 #include "../interface/varctx_interface.h"
+#include "../varmng.h"
+#include "../varmng-const.h"
+#include "vardef_model.h"
+
 #include <QAbstractItemView>
+#include <QMimeData>
 
 /**
  * @class VarCtxModel
@@ -24,8 +29,8 @@
 
 /* ------------------------------------------------------------------------- */
 /**
- * The pointer to the definition is stored internally and can be retrieved by
- * using the definition () method.
+ * The pointer to the context is stored internally and can be retrieved by
+ * using the context () method.
  */
 VarCtxModel::VarCtxModel (IVarCtx *context, QObject *parent) :
     QAbstractItemModel (parent),
@@ -128,6 +133,15 @@ bool VarCtxModel::validateIndex (
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+void VarCtxModel::clear()
+{
+    beginResetModel ();
+    context_->clearValues ();
+    endResetModel ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 QModelIndex VarCtxModel::index (
         int row, int column, const QModelIndex &parent) const
 {
@@ -157,13 +171,13 @@ QModelIndex VarCtxModel::parent (const QModelIndex &/*child*/) const
 }
 /* ========================================================================= */
 
-
 /* ------------------------------------------------------------------------- */
 Qt::ItemFlags VarCtxModel::flags (const QModelIndex &idx) const
 {
     Qt::ItemFlags result = QAbstractItemModel::flags (idx);
 
     switch (idx.column ()) {
+    case 0:
     case 1:
         result = Qt::ItemIsEditable | result;
         break;
@@ -204,36 +218,29 @@ bool VarCtxModel::removeRows (int row, int count, const QModelIndex &parent)
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-//bool VarCtxModel::insertRows (int row, int count, const QModelIndex &parent)
-//{
-//    bool b_ret = false;
-//    for (;;) {
-//        if (parent.isValid())
-//            break;
-//        if (row < 0)
-//            row = context_->valuesCount ();
+bool VarCtxModel::insertRows (int row, int count, const QModelIndex &parent)
+{
+    bool b_ret = false;
+    for (;;) {
+        if (parent.isValid())
+            break;
+        if (row < 0)
+            row = context_->valuesCount ();
 
-//        b_ret = true;
-//        beginInsertRows (parent, row, row+count-1);
-//        for (int i = 0; i < count; ++i) {
+        b_ret = true;
+        beginInsertRows (parent, row, row+count-1);
+        for (int i = 0; i < count; ++i) {
+            IVarValue * newv = context_->createVarValue (
+                        NULL, QString ());
+            if (newv == NULL)
+                break;
+        }
+        endInsertRows();
 
-//            //TODO
-
-
-//            IVarDef * newv = context_->manager ()->createVarValue (
-//                        QLatin1String ("NewVariable"),
-//                        tr ("NewVariable"),
-//                        QString(), pdef);
-//            b_ret = pdef->insertKidVarDef (row, newv);
-//            if (!b_ret)
-//                break;
-//        }
-//        endInsertRows();
-
-//        break;
-//    }
-//    return b_ret;
-//}
+        break;
+    }
+    return b_ret;
+}
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
@@ -252,11 +259,11 @@ QVariant VarCtxModel::data (const QModelIndex & idx, int role) const
 
         switch (idx.column ()) {
         case 0:
-            return pdef->varLabel ();
+            return pdef == NULL ? QString() : pdef->varLabel ();
         case 1:
             return val->varValue ();
         case 2:
-            return pdef->varDescription ();
+            return pdef == NULL ? QString() : pdef->varDescription ();
         }
 
         break;
@@ -308,9 +315,22 @@ bool VarCtxModel::setData (
         IVarValue * val = static_cast<IVarValue *>(idx.internalPointer());
 
         switch (idx.column ()) {
-        case 1:
+        case 0: {
+            IVarDef * def = context_->manager()->getDefinition (
+                        value.toString (), false);
+            if (def != NULL) {
+                val->setVarDefinition (def);
+                dataChanged (
+                            createIndex (idx.row(), 0),
+                            createIndex (idx.row(), 2));
+            }
+            break;}
+        case 1: {
             val->setVarValue (value.toString ());
-            break;
+            dataChanged (
+                        createIndex (idx.row(), 1),
+                        createIndex (idx.row(), 1));
+            break;}
         }
 
         break;
@@ -336,5 +356,84 @@ int VarCtxModel::columnCount (const QModelIndex &parent) const
         return 0;
     else
         return CTX_MODEL_COLUMN_COUNT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+Qt::DropActions VarCtxModel::supportedDropActions() const
+{
+    return Qt::MoveAction;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+Qt::DropActions VarCtxModel::supportedDragActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool VarCtxModel::canDropMimeData (
+        const QMimeData *data, Qt::DropAction action,
+        int /*row*/, int /*column*/, const QModelIndex &parent) const
+{
+    if (!data || !(action == Qt::CopyAction || action == Qt::MoveAction))
+        return false;
+    QString format = MIME_VARMNG_DEF;
+    if (!data->hasFormat(format)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool VarCtxModel::dropMimeData (
+        const QMimeData *data, Qt::DropAction action,
+        int /*row*/, int /* column */, const QModelIndex &parent)
+{
+    bool b_ret = false;
+    if (!data || !(action == Qt::CopyAction || action == Qt::MoveAction))
+        return false;
+    QStringList types = mimeTypes();
+    if (types.isEmpty())
+        return false;
+    QString format = MIME_VARMNG_DEF;
+    if (!data->hasFormat(format))
+        return false;
+    QByteArray encoded = data->data (format);
+    QDataStream stream (&encoded, QIODevice::ReadOnly);
+
+    QString name;
+    QString label;
+    QString description;
+    QString path;
+
+    b_ret = true;
+    while (!stream.atEnd()) {
+        VarDefModel::decodeDataExplicit (
+                    stream, name, label, description, path);
+        if (context_->findValue (name) != NULL) {
+            // already inside
+        } else {
+            IVarDef * def = context_->manager ()->getDefinition (path, false);
+            if (!def) {
+                def = context_->manager ()->getDefinition (path, true);
+                def->setVarLabel (label);
+                def->setVarDescription (description);
+                if (!def) {
+                    VARMNG_DEBUGM ("Could not create the definition for "
+                                   "%s variable\n", TMP_A(name));
+                    continue;
+                }
+            }
+            /*IVarValue * newv = */ context_->createVarValue (
+                        def, QString (), parent.row () + 1);
+        }
+    }
+
+    return b_ret;
 }
 /* ========================================================================= */

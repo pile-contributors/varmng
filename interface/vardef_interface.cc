@@ -64,6 +64,30 @@ IVarDef * IVarDef::findLocalVarKid (const QString &s_name) const
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+QString IVarDef::varPath () const
+{
+    return varPathSL().join (QChar ('/'));
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+QStringList IVarDef::varPathSL () const
+{
+    QStringList result;
+    const IVarDef * iter = this;
+    const IVarDef * iter_parent;
+    while (iter != NULL) {
+        iter_parent = iter->varGroup ();
+        if (iter_parent == NULL)
+            break;
+        result.prepend (iter->varName ());
+        iter = iter_parent;
+    }
+    return result;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 /**
  * The provided string is spited into components and provided to
  * base method.

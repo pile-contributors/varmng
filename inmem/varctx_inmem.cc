@@ -22,9 +22,10 @@
 /**
  */
 VarCtx::VarCtx (
+        VarMng *mng,
         const QString & name, const QString & label,
         const QList<IVarValue*> & vars) :
-    IVarCtx (),
+    IVarCtx (mng),
     name_ (name),
     label_ (label),
     vars_ (vars)
@@ -59,7 +60,6 @@ bool VarCtx::insertValue (int position, IVarValue *pdef)
         vars_.insert (position, pdef);
     }
 
-    vars_.insert (position, pdef);
     VARMNG_TRACE_EXIT;
     return true;
 }

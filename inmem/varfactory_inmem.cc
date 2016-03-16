@@ -28,9 +28,9 @@ VarFactory VarFactory::instance_;
 
 /* ------------------------------------------------------------------------- */
 IVarCtx * VarFactory::createVarCtx (
-        const QString &name, const QString &label)
+        VarMng *mng, const QString &name, const QString &label)
 {
-    return new VarCtx (name, label);
+    return new VarCtx (mng, name, label);
 }
 /* ========================================================================= */
 
@@ -38,20 +38,10 @@ IVarCtx * VarFactory::createVarCtx (
 IVarCtx * VarFactory::createEnvVarCtx (VarMng * mng)
 {
     IVarCtx * result = createVarCtx (
+                mng,
                 QLatin1String ("EnvVar"),
                 QObject::tr ("Environment Variables"));
-
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment ();
-    foreach (const QString & s_key, env.keys ()) {
-        // Find or create the definition.
-        QString s_value = env.value (s_key);
-        IVarDef * def = mng->getDefinition (s_key, true);
-        // def->setVarDescription (Object::tr ("Environment variable"));
-
-        IVarValue * val = createVarValue (def, s_value);
-        result->appendValue (val);
-    }
-
+    result->loadEnvVariables ();
     return result;
 }
 /* ========================================================================= */

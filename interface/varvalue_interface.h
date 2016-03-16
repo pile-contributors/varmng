@@ -50,6 +50,14 @@ public:
         return false;
     }
 
+    //! Set the definition.
+    virtual bool
+    setVarDefinition (
+            IVarDef * def) {
+        def_ = def;
+        return true;
+    }
+
     ///@}
     /* == == == == == == == == == == == == == == == == == */
 

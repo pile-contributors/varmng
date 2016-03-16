@@ -80,7 +80,7 @@ IVarValue *VarMng::createVarValue (IVarDef *def, const QString &s_value)
 /* ------------------------------------------------------------------------- */
 IVarCtx *VarMng::createVarCtx (const QString &name, const QString &label)
 {
-    return context_factory_->createVarCtx (name, label);
+    return context_factory_->createVarCtx (this, name, label);
 }
 /* ========================================================================= */
 

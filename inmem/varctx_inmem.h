@@ -23,6 +23,7 @@ public:
 
     //! Default constructor.
     VarCtx (
+            VarMng *mng,
             const QString & name = QString (),
             const QString & label = QString (),
             const QList<IVarValue *> & vars = QList<IVarValue *> ());
@@ -111,6 +112,13 @@ public:
     removeValue (
             int position = -1,
             IVarValue * pdef = NULL);
+
+    //! Remove all variables from this context.
+    virtual void
+    clearValues () {
+        qDeleteAll (vars_);
+        vars_.clear ();
+    }
 
     //! Remove a value inside this context and return it to the caller.
     virtual IVarValue *

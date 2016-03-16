@@ -42,6 +42,7 @@ public:
     //! Creates a contexts.
     virtual IVarCtx *
     createVarCtx (
+            VarMng * mng,
             const QString & name = QString (),
             const QString & label = QString ());
 

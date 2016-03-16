@@ -19,6 +19,7 @@ macro    (varmngInit
     # compose the list of headers and sources
     set(VARMNG_HEADERS
         "varmng.h"
+        "varmng-const.h"
         "vareval.h"
 
         "interface/varctx_interface.h"
@@ -33,6 +34,8 @@ macro    (varmngInit
         "models/varctx_model.h"
         "models/vardef_model.h"
         "models/vareval_model.h"
+
+        "delegates/varctx_delegate.h"
         )
 
     set(VARMNG_SOURCES
@@ -51,6 +54,8 @@ macro    (varmngInit
         "models/varctx_model.cc"
         "models/vardef_model.cc"
         "models/vareval_model.cc"
+
+        "delegates/varctx_delegate.cc"
         )
 
     set(VARMNG_QT_MODS

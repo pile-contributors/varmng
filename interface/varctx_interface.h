@@ -18,6 +18,7 @@ class IVarDef;
 class IVarValue;
 class IVarDefFactory;
 class IVarValueFactory;
+class VarMng;
 
 //! An evaluation context that may contain a number of variables and their values.
 class VARMNG_EXPORT IVarCtx {
@@ -25,7 +26,8 @@ class VARMNG_EXPORT IVarCtx {
 public:
 
     //! Default constructor.
-    IVarCtx ();
+    IVarCtx (
+            VarMng *mng);
 
     //! Destructor.
     virtual ~IVarCtx ();
@@ -42,11 +44,32 @@ public:
     findValue (
             const QString & s_name);
 
+    //! The manager where this context is rooted.
+    VarMng *
+    manager () const {
+        return mng_;
+    }
+
+    //! Load environment variables to this context.
+    int
+    loadEnvVariables ();
+
+
+protected:
+
+    //! Set the manager where this context is rooted.
+    void
+    setManager (
+            VarMng * mng) {
+        mng_ = mng;
+    }
+
 
     /* == == == == == == == == == == == == == == == == == */
     /** @name IVarCtx interface
      */
     ///@{
+
 public:
 
     //! The name of the context.
@@ -125,20 +148,26 @@ public:
         return false;
     }
 
-    //! Remove a value inside this context and return it to the caller.
-    virtual IVarValue *
-    takeValue (
-            int /* position */ = -1,
-            IVarValue * /* pdef */ = NULL) {
-        return NULL;
+    //! Remove all variables from this context.
+    virtual void
+    clearValues () {
+        for (int i = valuesCount () - 1; i >= 0; ++i) {
+            removeValue (i);
+        }
     }
+
+    virtual IVarValue *
+    createVarValue (
+            IVarDef * def,
+            const QString & s_value,
+            int i = -1);
 
     ///@}
     /* == == == == == == == == == == == == == == == == == */
 
 
 private:
-
+    VarMng * mng_;
 }; // class IVarCtx
 
 
@@ -146,9 +175,10 @@ private:
 class VARMNG_EXPORT IVarCtxFactory {
 public:
 
-    //! Creates a contexts.
+    //! Creates a context.
     virtual IVarCtx *
     createVarCtx (
+            VarMng *mng,
             const QString & name = QString (),
             const QString & label = QString ()) = 0;
 

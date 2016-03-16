@@ -21,7 +21,7 @@ QT_END_NAMESPACE
 
 //! A model to present the results of evaluation.
 class VARMNG_EXPORT VarEvalModel : public QAbstractItemModel {
-
+    Q_OBJECT
 public:
 
     //! Default constructor.

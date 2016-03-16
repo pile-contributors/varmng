@@ -23,7 +23,7 @@ class IVarCtx;
 
 //! Evaluate the value of context based variables.
 class VARMNG_EXPORT VarCtxModel : public QAbstractItemModel {
-
+    Q_OBJECT
 public:
 
     //! Default constructor.
@@ -61,6 +61,9 @@ public:
             const QModelIndex &idx,
             IVarValue *pdef = NULL) const;
 
+    //! Remove all values from the model.
+    void
+    clear ();
 
     /* == == == == == == == == == == == == == == == == */
     /** @name QAbstractItemModel
@@ -80,41 +83,67 @@ public:
     parent (
             const QModelIndex &child) const;
 
-    Qt::ItemFlags
+    virtual Qt::ItemFlags
     flags (
         const QModelIndex &index) const;
 
-    QVariant
+    virtual QVariant
     data (
         const QModelIndex &idx,
         int role = Qt::DisplayRole) const;
 
-    QVariant
+    virtual QVariant
     headerData (
         int section,
         Qt::Orientation orientation,
         int role = Qt::DisplayRole) const;
 
-    bool
+    virtual bool
     setData (
         const QModelIndex &index,
         const QVariant &value,
         int role = Qt::EditRole);
 
     //! Remove a number of rows
-    bool
+    virtual bool
     removeRows (
         int row,
         int count,
         const QModelIndex &parent = QModelIndex());
 
-    int
+    virtual int
     rowCount (
         const QModelIndex &parent = QModelIndex()) const;
 
-    int
+    virtual int
     columnCount (
         const QModelIndex &parent = QModelIndex()) const;
+
+    virtual bool
+    insertRows (
+            int row,
+            int count = 1,
+            const QModelIndex &parent = QModelIndex ());
+
+    Qt::DropActions
+    supportedDropActions () const;
+
+    Qt::DropActions
+    supportedDragActions () const;
+
+    bool
+    canDropMimeData (
+            const QMimeData *data,
+            Qt::DropAction action,
+            int, int,
+            const QModelIndex &parent) const;
+
+    bool
+    dropMimeData (
+            const QMimeData *data,
+            Qt::DropAction action,
+            int row, int,
+            const QModelIndex &parent);
 
     ///@}
     /* == == == == == == == == == == == == == == == == */

@@ -68,6 +68,14 @@ public:
             const QString & s_name) const;
 
 
+    //! The path and name of the variable with slash as separator.
+    QString
+    varPath () const;
+
+    //! The path and name (last item) of the variable.
+    QStringList
+    varPathSL () const;
+
     /* == == == == == == == == == == == == == == == == == */
     /** @name IVarDef interface
      */
