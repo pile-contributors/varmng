@@ -575,13 +575,17 @@ void VarDefModel::encodeDataExplicit (
         const QModelIndexList &indexes, QDataStream &stream) const
 {
     QModelIndexList::ConstIterator it = indexes.begin();
+    QMap<int,bool> rows;
     for (; it != indexes.end(); ++it) {
-        IVarDef * pdestin = static_cast<IVarDef *>((*it).internalPointer());
-        stream << (*it).row()
-               << pdestin->varName ()
-               << pdestin->varLabel ()
-               << pdestin->varDescription ()
-               << pdestin->varPath ();
+        int r = (*it).row();
+        if (!rows.contains (r)) {
+            IVarDef * pdestin = static_cast<IVarDef *>((*it).internalPointer());
+            stream << pdestin->varName ()
+                   << pdestin->varLabel ()
+                   << pdestin->varDescription ()
+                   << pdestin->varPath ();
+            rows.insert (r, true);
+        }
     }
 }
 /* ========================================================================= */

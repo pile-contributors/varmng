@@ -362,7 +362,7 @@ int VarCtxModel::columnCount (const QModelIndex &parent) const
 /* ------------------------------------------------------------------------- */
 Qt::DropActions VarCtxModel::supportedDropActions() const
 {
-    return Qt::MoveAction;
+    return Qt::CopyAction;
 }
 /* ========================================================================= */
 
@@ -376,7 +376,7 @@ Qt::DropActions VarCtxModel::supportedDragActions() const
 /* ------------------------------------------------------------------------- */
 bool VarCtxModel::canDropMimeData (
         const QMimeData *data, Qt::DropAction action,
-        int /*row*/, int /*column*/, const QModelIndex &parent) const
+        int /* row */, int /* column */, const QModelIndex &/* parent */) const
 {
     if (!data || !(action == Qt::CopyAction || action == Qt::MoveAction))
         return false;
@@ -419,7 +419,7 @@ bool VarCtxModel::dropMimeData (
             // already inside
         } else {
             IVarDef * def = context_->manager ()->getDefinition (path, false);
-            if (!def) {
+            if (def == NULL) {
                 def = context_->manager ()->getDefinition (path, true);
                 def->setVarLabel (label);
                 def->setVarDescription (description);
@@ -429,8 +429,11 @@ bool VarCtxModel::dropMimeData (
                     continue;
                 }
             }
+            int r = parent.row () + 1;
+            beginInsertRows (parent, r, r);
             /*IVarValue * newv = */ context_->createVarValue (
-                        def, QString (), parent.row () + 1);
+                        def, QString (), r);
+            endInsertRows();
         }
     }
 
