@@ -8,7 +8,7 @@
  */
 
 #include "vardef_model.h"
-#include "varmng-private.h"
+#include "../varmng-private.h"
 #include "../varmng.h"
 #include "../varmng-const.h"
 

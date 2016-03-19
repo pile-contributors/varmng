@@ -8,7 +8,7 @@
  */
 
 #include "varctx_model.h"
-#include "varmng-private.h"
+#include "../varmng-private.h"
 #include "../interface/varvalue_interface.h"
 #include "../interface/vardef_interface.h"
 #include "../interface/varctx_interface.h"

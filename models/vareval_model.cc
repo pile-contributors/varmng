@@ -8,12 +8,12 @@
  */
 
 #include "vareval_model.h"
-#include "varmng-private.h"
+#include "../varmng.h"
+#include "../varmng-private.h"
 #include "../interface/varctx_interface.h"
 #include "../interface/vardef_interface.h"
 #include "../interface/varvalue_interface.h"
 #include "../vareval.h"
-#include "../varmng.h"
 #include <QAbstractItemView>
 #include <QApplication>
 #include <QFont>

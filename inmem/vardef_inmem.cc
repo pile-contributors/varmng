@@ -8,7 +8,7 @@
  */
 
 #include "vardef_inmem.h"
-#include "varmng-private.h"
+#include "../varmng-private.h"
 #include "assert.h"
 
 /**

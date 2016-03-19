@@ -8,7 +8,7 @@
  */
 
 #include "vardef_interface.h"
-#include "varmng-private.h"
+#include "../varmng-private.h"
 #include <QStringList>
 
 /**

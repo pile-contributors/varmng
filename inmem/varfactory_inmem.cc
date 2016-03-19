@@ -8,12 +8,12 @@
  */
 
 #include "varfactory_inmem.h"
-#include "varmng-private.h"
+#include "../varmng.h"
+#include "../varmng-private.h"
 #include "../interface/varvalue_interface.h"
 #include "varctx_inmem.h"
 #include "vardef_inmem.h"
 #include "varvalue_inmem.h"
-#include "../varmng.h"
 #include <QString>
 #include <QObject>
 #include <QProcessEnvironment>

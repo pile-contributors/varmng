@@ -10,7 +10,7 @@
 #include "varctx_interface.h"
 #include "varvalue_interface.h"
 #include "vardef_interface.h"
-#include "varmng-private.h"
+#include "../varmng-private.h"
 #include "../varmng.h"
 #include <QProcessEnvironment>
 
