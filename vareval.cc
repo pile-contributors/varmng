@@ -61,7 +61,11 @@ bool VarEval::insertCtx (int idx, IVarCtx *ctx)
             break;
         if (ctx_list_.contains (ctx))
             break;
-        ctx_list_.insert (idx, ctx);
+        if ((idx < 0) || (idx >= ctx_list_.count())) {
+            ctx_list_.append (ctx);
+        } else {
+            ctx_list_.insert (idx, ctx);
+        }
         b_ret = true;
         break;
     }

@@ -18,6 +18,9 @@ QT_BEGIN_NAMESPACE
 class QAbstractItemView;
 QT_END_NAMESPACE
 
+class VarEval;
+class EvalValue;
+class EvalItem;
 
 //! A model to present the results of evaluation.
 class VARMNG_EXPORT VarEvalModel : public QAbstractItemModel {
@@ -34,22 +37,68 @@ public:
     //! Create the model index for an item pointer.
     QModelIndex
     toIndex (
-            void * item);
+            EvalItem * item);
 
     //! Convert a model index into an item pointer.
-    void *
+    EvalItem *
     fromIndex (
             const QModelIndex & idx) const;
 
     //! Tell if an index is valid for this model.
     bool
     validateIndex (
-            const QModelIndex & idx) const;
+            const QModelIndex & idx,
+            EvalItem *pdef = NULL) const;
 
     //! Get the item that is selected in provided view.
-    void *
+    EvalItem *
     getSelectedItem (
             QAbstractItemView * view);
+
+    //! Get the evaluator instance.
+    VarEval *
+    evaluator () const {
+        return  evaluator_;
+    }
+
+    //! Change the evaluator instance (implies reload()).
+    void
+    setEvaluator (
+            VarEval * eval);
+
+
+    //! Remove all cached items.
+    void
+    clear();
+
+    //! Scan the evaluator all over again.
+    void
+    reload ();
+
+    //! Is this the extended model or the simple one?
+    bool
+    isExtended () const {
+        return assoc_sources_;
+    }
+
+    //! Switch between extended and simple subtypes.
+    void
+    setExtended (
+            bool b_extended = true);
+
+    //! Switch between extended and simple subtypes.
+    void
+    setSimple () {
+        setExtended (false);
+    }
+
+
+protected:
+
+    int
+    kidsCount (
+            EvalItem * item) const;
+
 
 
     /* == == == == == == == == == == == == == == == == */
@@ -85,19 +134,6 @@ public:
         Qt::Orientation orientation,
         int role = Qt::DisplayRole) const;
 
-    bool
-    setData (
-        const QModelIndex &index,
-        const QVariant &value,
-        int role = Qt::EditRole);
-
-    //! Remove a number of rows
-    bool
-    removeRows (
-        int row,
-        int count,
-        const QModelIndex &parent = QModelIndex());
-
     int
     rowCount (
         const QModelIndex &parent = QModelIndex()) const;
@@ -109,6 +145,11 @@ public:
     ///@}
     /* == == == == == == == == == == == == == == == == */
 
+private:
+
+    VarEval * evaluator_;
+    QList<EvalValue*> values_; /**< the list of values */
+    bool assoc_sources_; /**< just list variables or list values in each context */
 
 }; // class VarEvalModel
 

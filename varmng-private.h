@@ -12,7 +12,11 @@
 
 #include <varmng/varmng-config.h>
 
-#if 0
+#ifdef _MSC_VER
+#   define __func__ __FUNCTION__
+#endif
+
+#if 1
 #    define VARMNG_DEBUGM printf
 #else
 #    define VARMNG_DEBUGM black_hole
