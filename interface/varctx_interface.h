@@ -54,6 +54,18 @@ public:
     int
     loadEnvVariables ();
 
+    //! Shortcut for creating a value through the manager.
+    IVarValue *
+    createVarValue (
+            IVarDef * def,
+            const QString & s_value,
+            int i = -1);
+
+    //! Find first item that has no associated definition.
+    IVarValue *
+    firstDegenerate () const;
+
+
 
 protected:
 
@@ -158,12 +170,6 @@ public:
             removeValue (i);
         }
     }
-
-    virtual IVarValue *
-    createVarValue (
-            IVarDef * def,
-            const QString & s_value,
-            int i = -1);
 
     ///@}
     /* == == == == == == == == == == == == == == == == == */

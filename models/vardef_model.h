@@ -70,6 +70,8 @@ public:
             int row = -1,
             const QModelIndex & parent = QModelIndex ());
 
+public slots:
+
     //! Reset the model.
     void
     reload ();

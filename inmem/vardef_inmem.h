@@ -26,6 +26,11 @@ public:
         IVarDef * group = NULL,
         const QList<IVarDef *> & kids = QList<IVarDef *> ());
 
+    //! Constructor for a root definition  (used with VarMng).
+    VarDef (
+        VarMng * mng);
+
+
     //! Destructor.
     virtual ~VarDef ();
 

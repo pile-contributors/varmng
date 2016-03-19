@@ -22,7 +22,8 @@
 /**
  * .
  */
-IVarDef::IVarDef()
+IVarDef::IVarDef (VarMng *mng) :
+    mng_(mng)
 {
     VARMNG_TRACE_ENTRY;
 

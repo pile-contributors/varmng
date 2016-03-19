@@ -13,6 +13,7 @@
 #include "../interface/vardef_interface.h"
 #include "../interface/varvalue_interface.h"
 #include "../vareval.h"
+#include "../varmng.h"
 #include <QAbstractItemView>
 #include <QApplication>
 #include <QFont>
@@ -124,6 +125,11 @@ public:
         return ctx_.indexOf (const_cast<EvalCtx *>(it));
     }
 
+    //! Find the instance associated with a context.
+    EvalCtx *
+    findContext (
+            IVarCtx * ctx);
+
     IVarValue * val_;
     QList<EvalCtx*> ctx_;
 };
@@ -213,7 +219,6 @@ VarEvalModel::VarEvalModel (QObject *parent) :
     assoc_sources_(true)
 {
     VARMNG_TRACE_ENTRY;
-
     VARMNG_TRACE_EXIT;
 }
 /* ========================================================================= */
@@ -240,14 +245,14 @@ void VarEvalModel::clear ()
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-QModelIndex VarEvalModel::toIndex (EvalItem *item)
+QModelIndex VarEvalModel::toIndex (EvalItem *item, int column)
 {
     if (item->type () == ContextType) {
         EvalCtx * ctxit = item->toContext ();
-        return createIndex (ctxit->indexInParent (), 0, item);
+        return createIndex (ctxit->indexInParent (), column, item);
     } else if (item->type () == ValueType) {
         EvalValue * valit = item->toValue ();
-        return createIndex (values_.indexOf (valit), 0, item);
+        return createIndex (values_.indexOf (valit), column, item);
     } else {
         return QModelIndex ();
     }
@@ -329,9 +334,58 @@ EvalItem * VarEvalModel::getSelectedItem (QAbstractItemView *view)
 void VarEvalModel::setEvaluator (VarEval *eval)
 {
     VARMNG_TRACE_ENTRY;
+
+    if ((evaluator_ != NULL) && (evaluator_->manager() != NULL)) {
+        disconnect(evaluator_->manager (), &VarMng::valueChanged,
+                this, &VarEvalModel::valueChanged);
+        disconnect(evaluator_->manager (), &VarMng::valueCreated,
+                this, &VarEvalModel::reload);
+    }
+
     evaluator_ = eval;
+
+    if ((evaluator_ != NULL) && (evaluator_->manager() != NULL)) {
+        connect(evaluator_->manager (), &VarMng::valueChanged,
+                this, &VarEvalModel::valueChanged);
+        connect(evaluator_->manager (), &VarMng::valueCreated,
+                this, &VarEvalModel::reload);
+    }
+
     reload ();
     VARMNG_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+IVarValue * VarEvalModel::reloadVariable (
+        EvalValue * defv, IVarDef * def, const QList<IVarCtx*> & ctxs)
+{
+    if (defv->ctx_.count() > 0) {
+        beginRemoveRows (toIndex (defv), 0, defv->ctx_.count()-1);
+        qDeleteAll (defv->ctx_);
+        defv->ctx_.clear ();
+        endRemoveRows ();
+    }
+
+    IVarValue * v = NULL;
+    QList<EvalCtx*>  newins;
+    foreach(IVarCtx * iter, ctxs) {
+        IVarValue * vtmp = iter->value (def);
+        if (vtmp != NULL) {
+            v = vtmp;
+            if (assoc_sources_) {
+                EvalCtx * defc = new EvalCtx (defv, iter, v);
+                newins.append (defc);
+            }
+        }
+    }
+
+    if (assoc_sources_) {
+        beginInsertRows (toIndex (defv), 0, newins.count()-1);
+        defv->ctx_ = newins;
+        endInsertRows ();
+    }
+    return v;
 }
 /* ========================================================================= */
 
@@ -347,17 +401,8 @@ void VarEvalModel::reload ()
 
         foreach (IVarDef * def, defs) {
             EvalValue * defv = new EvalValue ();
-            IVarValue * v = NULL;
-            foreach(IVarCtx * iter, ctxs) {
-                IVarValue * vtmp = iter->value (def);
-                if (vtmp != NULL) {
-                    v = vtmp;
-                    if (assoc_sources_) {
-                        EvalCtx * defc = new EvalCtx (defv, iter, v);
-                        defv->ctx_.append (defc);
-                    }
-                }
-            }
+            IVarValue * v = reloadVariable (defv, def, ctxs);
+
             if (v == NULL) {
                 delete defv;
             } else {
@@ -369,6 +414,29 @@ void VarEvalModel::reload ()
 
     endResetModel ();
     VARMNG_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void VarEvalModel::valueChanged (IVarValue *val)
+{
+    if (val != NULL) {
+        EvalItem * it = findItem (val->definition()->varName ());
+        if (it != NULL) {
+            EvalValue * defv = it->toValue ();
+            QModelIndex mi (toIndex (defv, 1));
+            EvalCtx * ctx = defv->findContext (val->context ());
+            if (ctx != NULL) {
+                QModelIndex mi = toIndex (ctx, 1);
+                dataChanged (mi, mi);
+            } else if (assoc_sources_) {
+                QList<IVarCtx*> ctxs = evaluator_->contexts ();
+                defv->val_ = reloadVariable (
+                            defv, defv->definition(), ctxs);
+            }
+            dataChanged (mi, mi);
+        }
+    }
 }
 /* ========================================================================= */
 
@@ -390,6 +458,42 @@ int VarEvalModel::kidsCount (EvalItem *item) const
     } else {
         return item->kidsCount ();
     }
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+EvalItem *VarEvalModel::findItem (IVarDef *def) const
+{
+    foreach (EvalValue*iter, values_) {
+        if (iter->value ()->definition() == def) {
+            return iter;
+        }
+    }
+    return NULL;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+EvalItem *VarEvalModel::findItem (IVarValue *def) const
+{
+    foreach (EvalValue*iter, values_) {
+        if (iter->value () == def) {
+            return iter;
+        }
+    }
+    return NULL;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+EvalItem *VarEvalModel::findItem (const QString & name) const
+{
+    foreach (EvalValue*iter, values_) {
+        if (iter->value ()->definition()->varName () == name) {
+            return iter;
+        }
+    }
+    return NULL;
 }
 /* ========================================================================= */
 
@@ -593,3 +697,17 @@ EvalCtx *EvalItem::toContext()
     }
 }
 /* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+EvalCtx * EvalValue::findContext (IVarCtx *ctx)
+{
+    foreach(EvalCtx * iter,  ctx_) {
+        if (iter->context () == ctx) {
+            return iter;
+        }
+    }
+    return NULL;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */

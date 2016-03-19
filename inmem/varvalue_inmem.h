@@ -22,6 +22,7 @@ public:
     //! Default constructor.
     VarValue (
             IVarDef * def,
+            IVarCtx * ctx,
             const QString & s_value);
 
     //! Destructor.

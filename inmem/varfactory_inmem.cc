@@ -48,9 +48,9 @@ IVarCtx * VarFactory::createEnvVarCtx (VarMng * mng)
 
 /* ------------------------------------------------------------------------- */
 IVarValue * VarFactory::createVarValue (
-        IVarDef *def, const QString &s_value)
+        IVarDef *def, IVarCtx * ctx, const QString &s_value)
 {
-    return new VarValue (def, s_value);
+    return new VarValue (def, ctx, s_value);
 }
 /* ========================================================================= */
 

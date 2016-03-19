@@ -14,6 +14,7 @@
 #include <QString>
 #include <QList>
 
+class VarMng;
 class IVarDefFactory;
 
 //! Interface for variable (or group of variables) definition.
@@ -22,7 +23,7 @@ class VARMNG_EXPORT IVarDef {
 public:
 
     //! Default constructor.
-    IVarDef ();
+    IVarDef (VarMng * mng);
 
     //! Destructor.
     virtual ~IVarDef ();
@@ -75,6 +76,23 @@ public:
     //! The path and name (last item) of the variable.
     QStringList
     varPathSL () const;
+
+
+    //! The manager where this definition is rooted.
+    VarMng *
+    manager () const {
+        return mng_;
+    }
+
+protected:
+
+    //! Set the manager where this definition is rooted.
+    void
+    setManager (
+            VarMng * mng) {
+        mng_ = mng;
+    }
+
 
     /* == == == == == == == == == == == == == == == == == */
     /** @name IVarDef interface
@@ -209,6 +227,8 @@ public:
     ///@}
     /* == == == == == == == == == == == == == == == == == */
 
+private:
+    VarMng * mng_;
 }; // class IVarDef
 
 

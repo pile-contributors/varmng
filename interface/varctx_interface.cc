@@ -70,7 +70,7 @@ int IVarCtx::loadEnvVariables ()
         IVarDef * def = mng_->getDefinition (s_key, true);
         // def->setVarDescription (Object::tr ("Environment variable"));
 
-        IVarValue * val = mng_->createVarValue (def, s_value);
+        IVarValue * val = mng_->createVarValue (def, this, s_value);
         appendValue (val);
         ++result;
     }
@@ -112,13 +112,29 @@ int IVarCtx::valueIndex (IVarValue *value) const
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+/**
+ * This method uses VarMng::createVarValue() which may emit a signal if
+ * the value was created.
+ */
 IVarValue * IVarCtx::createVarValue (
         IVarDef *def, const QString &s_value, int i)
 {
-    IVarValue * val = mng_->createVarValue (def, s_value);
+    IVarValue * val = mng_->createVarValue (def, this, s_value);
     if (val != NULL) {
         insertValue (i, val);
     }
     return val;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+IVarValue *IVarCtx::firstDegenerate() const
+{
+    foreach (IVarValue * val, contextVariables ()) {
+        if (val->definition () == NULL) {
+            return val;
+        }
+    }
+    return NULL;
 }
 /* ========================================================================= */

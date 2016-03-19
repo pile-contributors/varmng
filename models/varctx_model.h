@@ -48,7 +48,8 @@ public:
     //! Create the model index for an item pointer.
     QModelIndex
     toIndex (
-            IVarValue * item);
+            IVarValue * item,
+            int column = 0);
 
     //! Convert a model index into an item pointer.
     IVarValue *
@@ -61,9 +62,27 @@ public:
             const QModelIndex &idx,
             IVarValue *pdef = NULL) const;
 
+    //! Find the item that has no definition associated.
+    QModelIndex
+    editItem ();
+
+public slots:
+
     //! Remove all values from the model.
     void
     clear ();
+
+
+    //! Read all values again.
+    void
+    reload ();
+
+private slots:
+
+    //! A value for a variable has changed.
+    void
+    valueChanged (
+            IVarValue * val);
 
     /* == == == == == == == == == == == == == == == == */
     /** @name QAbstractItemModel

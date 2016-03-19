@@ -19,6 +19,9 @@ class QAbstractItemView;
 QT_END_NAMESPACE
 
 class VarEval;
+class IVarValue;
+class IVarDef;
+class IVarCtx;
 class EvalValue;
 class EvalItem;
 
@@ -37,7 +40,8 @@ public:
     //! Create the model index for an item pointer.
     QModelIndex
     toIndex (
-            EvalItem * item);
+            EvalItem * item,
+            int column = 0);
 
     //! Convert a model index into an item pointer.
     EvalItem *
@@ -66,15 +70,6 @@ public:
     setEvaluator (
             VarEval * eval);
 
-
-    //! Remove all cached items.
-    void
-    clear();
-
-    //! Scan the evaluator all over again.
-    void
-    reload ();
-
     //! Is this the extended model or the simple one?
     bool
     isExtended () const {
@@ -92,6 +87,22 @@ public:
         setExtended (false);
     }
 
+public slots:
+
+    //! Remove all cached items.
+    void
+    clear();
+
+    //! Scan the evaluator all over again.
+    void
+    reload ();
+
+private slots:
+
+    //! A value for a variable has changed.
+    void
+    valueChanged (
+            IVarValue * val);
 
 protected:
 
@@ -99,7 +110,29 @@ protected:
     kidsCount (
             EvalItem * item) const;
 
+private:
 
+    //! Find internal item associated with a definition.
+    EvalItem *
+    findItem (
+            IVarDef * def) const;
+
+    //! Find internal item associated with a value.
+    EvalItem *
+    findItem (
+            IVarValue * def) const;
+
+    //! Find internal item associated with a variable name.
+    EvalItem *
+    findItem (
+            const QString & name) const;
+
+
+    IVarValue *
+    reloadVariable (
+            EvalValue *defv,
+            IVarDef *def,
+            const QList<IVarCtx *> & ctxs);
 
     /* == == == == == == == == == == == == == == == == */
     /** @name QAbstractItemModel

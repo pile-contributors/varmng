@@ -37,6 +37,7 @@ public:
     virtual IVarValue *
     createVarValue (
             IVarDef * def,
+            IVarCtx * ctx,
             const QString & s_value);
 
     //! Creates a contexts.

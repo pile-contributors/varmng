@@ -13,6 +13,8 @@
 #include <varmng/varmng-config.h>
 
 class IVarDef;
+class IVarCtx;
+class VarMng;
 
 //! A variable associated with a value.
 class VARMNG_EXPORT IVarValue {
@@ -21,7 +23,8 @@ public:
 
     //! Default constructor.
     IVarValue (
-            IVarDef * def);
+            IVarDef * def,
+            IVarCtx * ctx);
 
     //! Destructor.
     virtual ~IVarValue ();
@@ -32,6 +35,20 @@ public:
         return def_;
     }
 
+    //! The manager for this variable.
+    VarMng *
+    manager () const;
+
+    //! The context for this value.
+    IVarCtx *
+    context () const {
+        return ctx_;
+    }
+
+    //! Set the value in this instance by using the manager.
+    bool
+    setValue (
+            const QString & s_value);
 
     /* == == == == == == == == == == == == == == == == == */
     /** @name IVarValue interface
@@ -64,6 +81,7 @@ public:
 
 private:
     IVarDef * def_; /**< the definition for this variable */
+    IVarCtx * ctx_; /**< the context for this value */
 }; // IVarValue
 
 
@@ -75,6 +93,7 @@ public:
     virtual IVarValue *
     createVarValue (
             IVarDef * def,
+            IVarCtx * ctx,
             const QString & s_value) = 0;
 
 }; // IVarValueFactory

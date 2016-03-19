@@ -21,8 +21,8 @@
  * The pointer to the definition is stored internally and can be retrieved by
  * using the definition () method.
  */
-VarValue::VarValue (IVarDef *def, const QString &s_value) :
-    IVarValue (def),
+VarValue::VarValue (IVarDef *def, IVarCtx * ctx, const QString &s_value) :
+    IVarValue (def, ctx),
     s_value_ (s_value)
 {
     VARMNG_TRACE_ENTRY;
@@ -33,7 +33,6 @@ VarValue::VarValue (IVarDef *def, const QString &s_value) :
 
 /* ------------------------------------------------------------------------- */
 /**
- * Detailed description for destructor.
  */
 VarValue::~VarValue()
 {

@@ -18,12 +18,11 @@
 
 /* ------------------------------------------------------------------------- */
 /**
- * Detailed description for constructor.
  */
 VarDef::VarDef (
         const QString & name, const QString & label, const QString & description,
         IVarDef * group, const QList<IVarDef *> & kids) :
-    IVarDef (),
+    IVarDef (group == NULL ? NULL : group->manager ()),
     name_(name),
     label_(label),
     description_(description),
@@ -38,7 +37,23 @@ VarDef::VarDef (
 
 /* ------------------------------------------------------------------------- */
 /**
- * Detailed description for destructor.
+ */
+VarDef::VarDef (
+        VarMng * mng) :
+    IVarDef (mng),
+    name_(),
+    label_(),
+    description_(),
+    group_(NULL),
+    kids_()
+{
+    VARMNG_TRACE_ENTRY;
+    VARMNG_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+/**
  */
 VarDef::~VarDef ()
 {

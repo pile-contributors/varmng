@@ -33,7 +33,8 @@ VarDefModel::VarDefModel (VarMng * mng, QObject *parent) :
     mng_ (mng)
 {
     VARMNG_TRACE_ENTRY;
-
+    connect(mng_, &VarMng::definitionCreated,
+            this, &VarDefModel::reload);
     VARMNG_TRACE_EXIT;
 }
 /* ========================================================================= */
@@ -665,6 +666,6 @@ bool VarDefModel::dropMimeData (
                         def->varDescription(), row++, parent));
         }
     }
-    return b_ret;
+    return false;
 }
 /* ========================================================================= */

@@ -37,7 +37,10 @@ VarCtxModel::VarCtxModel (IVarCtx *context, QObject *parent) :
     context_ (context)
 {
     VARMNG_TRACE_ENTRY;
-
+    connect(context_->manager (), &VarMng::valueChanged,
+            this, &VarCtxModel::valueChanged);
+    connect(context_->manager (), &VarMng::valueCreated,
+            this, &VarCtxModel::reload);
     VARMNG_TRACE_EXIT;
 }
 /* ========================================================================= */
@@ -72,7 +75,7 @@ IVarValue * VarCtxModel::getSelectedItem (QAbstractItemView *view)
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-QModelIndex VarCtxModel::toIndex (IVarValue *item)
+QModelIndex VarCtxModel::toIndex (IVarValue *item, int column)
 {
     QModelIndex result;
     for (;;) {
@@ -82,7 +85,7 @@ QModelIndex VarCtxModel::toIndex (IVarValue *item)
         if (row == -1)
             break;
 
-        result = createIndex (row, 0, item);
+        result = createIndex (row, column, item);
         break;
     }
     return result;
@@ -133,11 +136,43 @@ bool VarCtxModel::validateIndex (
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-void VarCtxModel::clear()
+QModelIndex VarCtxModel::editItem ()
+{
+    IVarValue * vval = context_->firstDegenerate ();
+    if (vval == NULL) {
+        return QModelIndex ();
+    } else {
+        return toIndex (vval);
+    }
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void VarCtxModel::clear ()
 {
     beginResetModel ();
     context_->clearValues ();
     endResetModel ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void VarCtxModel::reload ()
+{
+    beginResetModel ();
+    endResetModel ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void VarCtxModel::valueChanged (IVarValue *val)
+{
+    if (val != NULL) {
+        if (val->context() == context_) {
+            QModelIndex mi (toIndex (val, 1));
+            dataChanged (mi, mi);
+        }
+    }
 }
 /* ========================================================================= */
 
@@ -319,14 +354,16 @@ bool VarCtxModel::setData (
             IVarDef * def = context_->manager()->getDefinition (
                         value.toString (), false);
             if (def != NULL) {
-                val->setVarDefinition (def);
-                dataChanged (
-                            createIndex (idx.row(), 0),
-                            createIndex (idx.row(), 2));
+                if (val->definition() != def) {
+                    context_->manager()->setValueDefinition (val, def);
+                    dataChanged (
+                                createIndex (idx.row(), 0),
+                                createIndex (idx.row(), CTX_MODEL_COLUMN_COUNT-1));
+                }
             }
             break;}
         case 1: {
-            val->setVarValue (value.toString ());
+            val->setValue (value.toString ());
             dataChanged (
                         createIndex (idx.row(), 1),
                         createIndex (idx.row(), 1));

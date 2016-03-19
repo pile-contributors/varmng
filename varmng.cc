@@ -29,8 +29,8 @@
 /**
  * Detailed description for constructor.
  */
-VarMng::VarMng () :
-    def_root_ (),
+VarMng::VarMng (QObject * parent) : QObject (parent),
+    def_root_ (this),
     value_factory_ (VarFactory::instance ()),
     context_factory_ (VarFactory::instance ()),
     def_factory_ (VarFactory::instance ())
@@ -66,27 +66,73 @@ IVarDef *VarMng::createVarDef (
         const QString &name, const QString &label,
         const QString &description, IVarDef *parent)
 {
-    return def_factory_->createVarDef(name, label, description, parent);
+    IVarDef * def = def_factory_->createVarDef(name, label, description, parent);
+    if (def != NULL) {
+        emit definitionCreated (def);
+    }
+    return def;
 }
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-IVarValue *VarMng::createVarValue (IVarDef *def, const QString &s_value)
+IVarValue *VarMng::createVarValue (
+        IVarDef *def, IVarCtx * ctx, const QString &s_value)
 {
-    return value_factory_->createVarValue (def, s_value);
+    IVarValue * val = value_factory_->createVarValue (def, ctx, s_value);
+    if ((val != NULL) && (val->definition() != NULL)) {
+        emit valueCreated (val);
+    }
+    return val;
 }
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
 IVarCtx *VarMng::createVarCtx (const QString &name, const QString &label)
 {
-    return context_factory_->createVarCtx (this, name, label);
+    IVarCtx * ctx = context_factory_->createVarCtx (this, name, label);
+    if (ctx != NULL) {
+        emit contextCreated (ctx);
+    }
+    return ctx;
 }
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
 IVarCtx * VarMng::createEnvVarCtx ()
 {
-    return VarFactory::instance ()->createEnvVarCtx (this);
+    IVarCtx * ctx = VarFactory::instance ()->createEnvVarCtx (this);
+    if (ctx != NULL) {
+        emit contextCreated (ctx);
+    }
+    return ctx;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool VarMng::changeValue (IVarValue *val, const QString &s_value)
+{
+    bool result = val->setVarValue (s_value);
+    if (result) {
+        emit valueChanged (val);
+    }
+    return result;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool VarMng::setValueDefinition (IVarValue *val, IVarDef *def)
+{
+    bool b_ret = false;
+    IVarDef *def_prev = val->definition ();
+    if (val->setVarDefinition (def)) {
+        if (def_prev != NULL) {
+            // hack to trigger a  full reload
+            emit definitionCreated (def);
+        } else {
+            emit valueChanged (val);
+        }
+        b_ret = true;
+    }
+    return b_ret;
 }
 /* ========================================================================= */

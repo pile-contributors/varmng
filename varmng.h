@@ -12,6 +12,7 @@
 
 #include <varmng/varmng-config.h>
 #include <varmng/vardef_inmem.h>
+#include <QObject>
 
 class IVarDef;
 class IVarValue;
@@ -21,12 +22,13 @@ class IVarCtxFactory;
 class IVarDefFactory;
 
 //! Manages variable definition tree and variable instantiations.
-class VARMNG_EXPORT VarMng {
-
+class VARMNG_EXPORT VarMng : public QObject {
+    Q_OBJECT
 public:
 
     //! Default constructor.
-    VarMng ();
+    VarMng (
+            QObject * parent = NULL);
 
     //! Destructor.
     virtual ~VarMng ();
@@ -69,6 +71,7 @@ public:
     IVarValue *
     createVarValue (
             IVarDef * def,
+            IVarCtx * ctx,
             const QString & s_value);
 
     //! Creates a context.
@@ -81,7 +84,39 @@ public:
     IVarCtx *
     createEnvVarCtx ();
 
-protected:
+    //! Changing the value through the manager also signals the change.
+    bool
+    changeValue (
+            IVarValue * val,
+            const QString & s_value);
+
+    //! Change the definition associated with a value.
+    bool
+    setValueDefinition (
+            IVarValue * val,
+            IVarDef * def);
+
+signals:
+
+    //! A definition was created and added to the manager.
+    void
+    definitionCreated (
+            IVarDef * def);
+
+    //! A definition was created and added to a context.
+    void
+    valueCreated (
+            IVarValue * val);
+
+    //! A context was created and added to the manager.
+    void
+    contextCreated (
+            IVarCtx * def);
+
+    //! A variable was assigned a new value.
+    void
+    valueChanged (
+            IVarValue * def);
 
 private:
     VarDef def_root_; /**< the host for all definitions in this instance */
