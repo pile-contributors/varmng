@@ -12,6 +12,7 @@
 #include "../models/vardef_model.h"
 #include "../models/varctx_model.h"
 #include "../interface/varctx_interface.h"
+#include "../varmng.h"
 
 #include <QStyleOptionViewItem>
 #include <QCompleter>
@@ -98,5 +99,22 @@ QWidget * VarCtxDeleg::createEditor (
     if (m != NULL) {
     }
     return w;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void VarCtxDeleg::setModelData (
+        QWidget *editor, QAbstractItemModel *model,
+        const QModelIndex &index) const
+{
+    /*const VarCtxModel * m = qobject_cast<const VarCtxModel*>(
+                model);*/
+    VarMng * mng = ctx_->manager();
+    QLineEdit * le = qobject_cast<QLineEdit *>(editor);
+
+    // Create the definition if it does not already exists.
+    /*IVarDef * def = */mng->getDefinition (le->text (), true);
+
+    QStyledItemDelegate::setModelData (editor, model, index);
 }
 /* ========================================================================= */

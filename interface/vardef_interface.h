@@ -197,7 +197,7 @@ public:
     virtual bool
     isVarKid (
             IVarDef * pdef) const {
-        return varKidIndex (pdef) == -1;
+        return varKidIndex (pdef) != -1;
     }
 
     //! Insert a definition inside this node.

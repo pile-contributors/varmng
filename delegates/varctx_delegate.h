@@ -54,6 +54,12 @@ public:
             const QStyleOptionViewItem &option,
             const QModelIndex &index) const;
 
+    void
+    setModelData (
+            QWidget *editor,
+            QAbstractItemModel *model,
+            const QModelIndex &index) const;
+
     ///@}
     /* == == == == == == == == == == == == == == == == == */
 
