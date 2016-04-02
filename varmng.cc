@@ -64,9 +64,12 @@ IVarDef * VarMng::getDefinition (const QString & s_name, bool b_create)
 /* ------------------------------------------------------------------------- */
 IVarDef *VarMng::createVarDef (
         const QString &name, const QString &label,
-        const QString &description, IVarDef *parent)
+        const QString &description, IVarDef *parent,
+        IVarDefFactory * factory_override)
 {
-    IVarDef * def = def_factory_->createVarDef(name, label, description, parent);
+    if (factory_override == NULL)
+        factory_override = def_factory_;
+    IVarDef * def = factory_override->createVarDef(name, label, description, parent);
     if (def != NULL) {
         emit definitionCreated (def);
     }
@@ -76,9 +79,12 @@ IVarDef *VarMng::createVarDef (
 
 /* ------------------------------------------------------------------------- */
 IVarValue *VarMng::createVarValue (
-        IVarDef *def, IVarCtx * ctx, const QString &s_value)
+        IVarDef *def, IVarCtx * ctx, const QString &s_value,
+        IVarValueFactory * factory_override)
 {
-    IVarValue * val = value_factory_->createVarValue (def, ctx, s_value);
+    if (factory_override == NULL)
+        factory_override = value_factory_;
+    IVarValue * val = factory_override->createVarValue (def, ctx, s_value);
     if ((val != NULL) && (val->definition() != NULL)) {
         emit valueCreated (val);
     }
@@ -87,9 +93,13 @@ IVarValue *VarMng::createVarValue (
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-IVarCtx *VarMng::createVarCtx (const QString &name, const QString &label)
+IVarCtx *VarMng::createVarCtx (
+        const QString &name, const QString &label,
+        IVarCtxFactory * factory_override)
 {
-    IVarCtx * ctx = context_factory_->createVarCtx (this, name, label);
+    if (factory_override == NULL)
+        factory_override = context_factory_;
+    IVarCtx * ctx = factory_override->createVarCtx (this, name, label);
     if (ctx != NULL) {
         emit contextCreated (ctx);
     }

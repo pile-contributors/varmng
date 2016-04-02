@@ -65,20 +65,23 @@ public:
             const QString & name = QString (),
             const QString & label = QString (),
             const QString & description = QString (),
-            IVarDef * parent = NULL);
+            IVarDef * parent = NULL,
+            IVarDefFactory * factory_override = NULL);
 
     //! Creates a value associated with a variable definition.
     IVarValue *
     createVarValue (
             IVarDef * def,
             IVarCtx * ctx,
-            const QString & s_value);
+            const QString & s_value,
+            IVarValueFactory *factory_override = NULL);
 
     //! Creates a context.
     IVarCtx *
     createVarCtx (
             const QString & name = QString (),
-            const QString & label = QString ());
+            const QString & label = QString (),
+            IVarCtxFactory * factory_override = NULL);
 
     //! Creates and populates a context from environment variables.
     IVarCtx *
