@@ -99,6 +99,71 @@ public:
             IVarValue * val,
             IVarDef * def);
 
+    /* == == == == == == == == == == == == == == == == == */
+    /** @name Factories
+     */
+    ///@{
+
+    //! Change the factory class used for values.
+    IVarValueFactory *
+    setValueFactory (
+            IVarValueFactory * value) {
+        IVarValueFactory *  result = value_factory_;
+        value_factory_ = value;
+        return result;
+    }
+
+    //! Get the factory class used for values.
+    IVarValueFactory *
+    valueFactory () const {
+        return value_factory_;
+    }
+
+    //! Change the factory class used for contexts.
+    IVarCtxFactory *
+    setContextFactory (
+            IVarCtxFactory * value) {
+        IVarCtxFactory * result = context_factory_;
+        context_factory_ = value;
+        return result;
+    }
+
+    //! Get the factory class used for contexts.
+    IVarCtxFactory *
+    contextFactory () const {
+        return context_factory_;
+    }
+
+    //! Change the factory class used for definitions.
+    IVarDefFactory *
+    setDefinitionFactory (
+            IVarDefFactory * value) {
+        IVarDefFactory *  result = def_factory_;
+        def_factory_ = value;
+        return result;
+    }
+
+    //! Get the factory class used for definitions.
+    IVarDefFactory *
+    definitionFactory () const {
+        return def_factory_;
+    }
+
+    //! Set all factories in one call.
+    void
+    setAllFactories (
+            IVarValueFactory * vfact,
+            IVarCtxFactory * cfact,
+            IVarDefFactory * dfact) {
+        value_factory_ = vfact;
+        context_factory_ = cfact;
+        def_factory_ = dfact;
+    }
+
+    ///@}
+    /* == == == == == == == == == == == == == == == == == */
+
+
 signals:
 
     //! A definition was created and added to the manager.
