@@ -57,7 +57,7 @@ VarMng::~VarMng ()
 IVarDef * VarMng::getDefinition (const QString & s_name, bool b_create)
 {
     return def_root_.findVarKid (
-                s_name, b_create ? VarFactory::instance () : NULL);
+                s_name, b_create ? def_factory_ : NULL);
 }
 /* ========================================================================= */
 
