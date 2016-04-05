@@ -22,7 +22,7 @@
 /**
  *
  */
-VarEval::VarEval () :
+VarEval::VarEval () : IVarBase (),
     ctx_list_ ()
 {
     VARMNG_TRACE_ENTRY;

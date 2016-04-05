@@ -29,7 +29,7 @@
 /**
  * Detailed description for constructor.
  */
-VarMng::VarMng (QObject * parent) : QObject (parent),
+VarMng::VarMng (QObject * parent) : QObject (parent), IVarBase (),
     def_root_ (this),
     value_factory_ (VarFactory::instance ()),
     context_factory_ (VarFactory::instance ()),
@@ -58,6 +58,13 @@ IVarDef * VarMng::getDefinition (const QString & s_name, bool b_create)
 {
     return def_root_.findVarKid (
                 s_name, b_create ? def_factory_ : NULL);
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+QList<IVarDef *> VarMng::definitions () const
+{
+    return def_root_.varKids ();
 }
 /* ========================================================================= */
 

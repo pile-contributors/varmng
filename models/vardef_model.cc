@@ -29,7 +29,7 @@
  * using the definition () method.
  */
 VarDefModel::VarDefModel (VarMng * mng, QObject *parent) :
-    QAbstractItemModel (parent),
+    QAbstractItemModel (parent), IVarBase (),
     mng_ (mng)
 {
     VARMNG_TRACE_ENTRY;

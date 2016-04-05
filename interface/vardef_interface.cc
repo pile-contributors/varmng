@@ -22,7 +22,7 @@
 /**
  * .
  */
-IVarDef::IVarDef (VarMng *mng) :
+IVarDef::IVarDef (VarMng *mng) : IVarBase (),
     mng_(mng)
 {
     VARMNG_TRACE_ENTRY;
@@ -162,3 +162,7 @@ IVarDef * IVarDef::findLocalVarKid (
     return result;
 }
 /* ========================================================================= */
+
+int IVarDefFactory::vmTyId() const {
+    return BasicDefinitionFactory;
+}

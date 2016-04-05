@@ -12,6 +12,7 @@
 
 #include <varmng/varmng-config.h>
 #include <varmng/varctx_interface.h>
+#include <varmng/varbase_interface.h>
 #include <QString>
 #include <QStyledItemDelegate>
 
@@ -22,7 +23,7 @@ class QTreeView;
 QT_END_NAMESPACE
 
 //! An evaluation context that may contain a number of variables and their values.
-class VARMNG_EXPORT VarCtxDeleg : public QStyledItemDelegate {
+class VARMNG_EXPORT VarCtxDeleg : public QStyledItemDelegate, public IVarBase  {
     Q_OBJECT
 public:
 
@@ -41,6 +42,12 @@ public:
             IVarCtx * ctx,
             QTreeView * tv);
 
+
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return ContextDelegate;
+    }
 
     /* == == == == == == == == == == == == == == == == == */
     /** @name QStyledItemDelegate interface

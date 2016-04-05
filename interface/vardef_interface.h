@@ -11,6 +11,7 @@
 #define GUARD_VARDEF_INTERFACE_INCLUDE
 
 #include <varmng/varmng-config.h>
+#include <varmng/varbase_interface.h>
 #include <QString>
 #include <QList>
 
@@ -18,7 +19,7 @@ class VarMng;
 class IVarDefFactory;
 
 //! Interface for variable (or group of variables) definition.
-class VARMNG_EXPORT IVarDef {
+class VARMNG_EXPORT IVarDef : public IVarBase {
 
 public:
 
@@ -82,6 +83,12 @@ public:
     VarMng *
     manager () const {
         return mng_;
+    }
+
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return BasicDefinition;
     }
 
 protected:
@@ -233,8 +240,12 @@ private:
 
 
 //! Factory class for creating variable definitions.
-class VARMNG_EXPORT IVarDefFactory {
+class VARMNG_EXPORT IVarDefFactory : public IVarBase {
 public:
+
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const;
 
     //! Creates a variable definition.
     virtual IVarDef *

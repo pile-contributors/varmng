@@ -34,7 +34,11 @@ public:
     //! Destructor.
     virtual ~VarDef ();
 
-
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return MemoryDefinition;
+    }
 
     /* == == == == == == == == == == == == == == == == == */
     /** @name IVarDef interface

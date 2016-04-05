@@ -11,6 +11,8 @@
 #define GUARD_VARCTX_MODEL_INCLUDE
 
 #include <varmng/varmng-config.h>
+#include <varmng/varbase_interface.h>
+
 #include <QAbstractItemModel>
 
 QT_BEGIN_NAMESPACE
@@ -22,7 +24,7 @@ class IVarValue;
 class IVarCtx;
 
 //! Evaluate the value of context based variables.
-class VARMNG_EXPORT VarCtxModel : public QAbstractItemModel {
+class VARMNG_EXPORT VarCtxModel : public QAbstractItemModel, public IVarBase {
     Q_OBJECT
 public:
 
@@ -65,6 +67,12 @@ public:
     //! Find the item that has no definition associated.
     QModelIndex
     editItem ();
+
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return ContextModel;
+    }
 
 public slots:
 

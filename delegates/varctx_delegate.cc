@@ -28,7 +28,7 @@
 /**
  */
 VarCtxDeleg::VarCtxDeleg (IVarCtx *ctx, QObject * parent) :
-    QStyledItemDelegate (parent),
+    QStyledItemDelegate (parent), IVarBase (),
     ctx_(ctx)
 {
     VARMNG_TRACE_ENTRY;

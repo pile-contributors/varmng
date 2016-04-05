@@ -11,6 +11,7 @@
 #define GUARD_VARCTX_INTERFACE_INCLUDE
 
 #include <varmng/varmng-config.h>
+#include <varmng/varbase_interface.h>
 #include <QString>
 #include <QList>
 
@@ -21,7 +22,7 @@ class IVarValueFactory;
 class VarMng;
 
 //! An evaluation context that may contain a number of variables and their values.
-class VARMNG_EXPORT IVarCtx {
+class VARMNG_EXPORT IVarCtx : public IVarBase {
 
 public:
 
@@ -66,6 +67,11 @@ public:
     firstDegenerate () const;
 
 
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return BasicContext;
+    }
 
 protected:
 
@@ -181,8 +187,12 @@ private:
 
 
 //! Factory class for creating contexts for values associated with variables.
-class VARMNG_EXPORT IVarCtxFactory {
+class VARMNG_EXPORT IVarCtxFactory : public IVarBase {
 public:
+
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const;
 
     //! Creates a context.
     virtual IVarCtx *

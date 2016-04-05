@@ -25,6 +25,12 @@ class VARMNG_EXPORT VarFactory  :
 
 public:
 
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return MemoryFactory;
+    }
+
     //! Creates a variable definition.
     virtual IVarDef *
     createVarDef (

@@ -28,6 +28,11 @@ public:
     //! Destructor.
     virtual ~VarValue ();
 
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return MemoryValue;
+    }
 
     /* == == == == == == == == == == == == == == == == == */
     /** @name IVarValue interface

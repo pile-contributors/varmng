@@ -213,7 +213,7 @@ public:
 /**
  */
 VarEvalModel::VarEvalModel (QObject *parent) :
-    QAbstractItemModel (parent),
+    QAbstractItemModel (parent), IVarBase (),
     evaluator_(NULL),
     values_(),
     assoc_sources_(true)

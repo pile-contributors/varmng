@@ -11,6 +11,7 @@
 #define GUARD_VARDEF_MODEL_INCLUDE
 
 #include <varmng/varmng-config.h>
+#include <varmng/varbase_interface.h>
 #include <QAbstractItemModel>
 
 QT_BEGIN_NAMESPACE
@@ -22,7 +23,7 @@ class IVarDef;
 class VarMng;
 
 //! Model for definitions available in a manager instance.
-class VARMNG_EXPORT VarDefModel : public QAbstractItemModel {
+class VARMNG_EXPORT VarDefModel : public QAbstractItemModel, public IVarBase  {
     Q_OBJECT
 public:
 
@@ -69,6 +70,12 @@ public:
             const QString & description = QString (),
             int row = -1,
             const QModelIndex & parent = QModelIndex ());
+
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return DefinitionModel;
+    }
 
 public slots:
 

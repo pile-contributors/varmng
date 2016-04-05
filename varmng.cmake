@@ -25,6 +25,7 @@ macro    (varmngInit
         "interface/varctx_interface.h"
         "interface/varvalue_interface.h"
         "interface/vardef_interface.h"
+        "interface/varbase_interface.h"
 
         "inmem/varfactory_inmem.h"
         "inmem/varctx_inmem.h"

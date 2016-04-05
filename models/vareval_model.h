@@ -11,6 +11,7 @@
 #define GUARD_VAREVAL_MODEL_INCLUDE
 
 #include <varmng/varmng-config.h>
+#include <varmng/varbase_interface.h>
 #include <QAbstractItemModel>
 
 
@@ -26,7 +27,7 @@ class EvalValue;
 class EvalItem;
 
 //! A model to present the results of evaluation.
-class VARMNG_EXPORT VarEvalModel : public QAbstractItemModel {
+class VARMNG_EXPORT VarEvalModel : public QAbstractItemModel, public IVarBase {
     Q_OBJECT
 public:
 
@@ -85,6 +86,12 @@ public:
     void
     setSimple () {
         setExtended (false);
+    }
+
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return EvaluationModel;
     }
 
 public slots:

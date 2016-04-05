@@ -22,7 +22,7 @@ class IVarCtxFactory;
 class IVarDefFactory;
 
 //! Manages variable definition tree and variable instantiations.
-class VARMNG_EXPORT VarMng : public QObject {
+class VARMNG_EXPORT VarMng : public QObject, public IVarBase  {
     Q_OBJECT
 public:
 
@@ -32,6 +32,12 @@ public:
 
     //! Destructor.
     virtual ~VarMng ();
+
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return BasicManager;
+    }
 
     //! Get the number of definitions in the manager.
     int
@@ -52,12 +58,15 @@ public:
             const QString & s_name,
             bool b_create = false);
 
+    //! Get all definitions.
+    QList<IVarDef *>
+    definitions () const;
+
     //! Internal definition at the top of the hierarchy.
     VarDef *
     rootVarDef () {
         return &def_root_;
     }
-
 
     //! Creates a variable definition.
     IVarDef *

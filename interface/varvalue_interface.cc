@@ -22,7 +22,7 @@
  * The pointer to the definition is stored internally and can be retrieved by
  * using the definition () method.
  */
-IVarValue::IVarValue (IVarDef *def, IVarCtx * ctx) :
+IVarValue::IVarValue (IVarDef *def, IVarCtx * ctx) : IVarBase (),
     def_(def),
     ctx_(ctx)
 {
@@ -75,3 +75,7 @@ bool IVarValue::setValue (const QString &s_value)
     }
 }
 /* ========================================================================= */
+
+int IVarValueFactory::vmTyId() const {
+    return BasicValueFactory;
+}

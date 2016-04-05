@@ -33,7 +33,7 @@
  * using the context () method.
  */
 VarCtxModel::VarCtxModel (IVarCtx *context, QObject *parent) :
-    QAbstractItemModel (parent),
+    QAbstractItemModel (parent), IVarBase (),
     context_ (context)
 {
     VARMNG_TRACE_ENTRY;

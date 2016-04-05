@@ -31,7 +31,11 @@ public:
     //! Destructor.
     virtual ~VarCtx ();
 
-
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return MemoryContext;
+    }
 
     /* == == == == == == == == == == == == == == == == == */
     /** @name IVarCtx interface

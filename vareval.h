@@ -11,6 +11,7 @@
 #define GUARD_VAREVAL_INCLUDE
 
 #include <varmng/varmng-config.h>
+#include <varmng/varbase_interface.h>
 #include <QList>
 #include <QMap>
 
@@ -21,7 +22,7 @@ class IVarDef;
 class IVarValue;
 
 //! Evaluate the value of context based variables.
-class VARMNG_EXPORT VarEval {
+class VARMNG_EXPORT VarEval: public IVarBase  {
 
 public:
 
@@ -82,6 +83,11 @@ public:
     collectValues (
             const QList<IVarDef*> & defs);
 
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return Evaluator;
+    }
 
 
 private:

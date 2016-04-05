@@ -24,7 +24,7 @@
 /**
  */
 IVarCtx::IVarCtx (
-        VarMng *mng) :
+        VarMng *mng) : IVarBase (),
     mng_(mng)
 {
     VARMNG_TRACE_ENTRY;
@@ -138,3 +138,7 @@ IVarValue *IVarCtx::firstDegenerate() const
     return NULL;
 }
 /* ========================================================================= */
+
+int IVarCtxFactory::vmTyId() const {
+    return BasicContextFactory;
+}

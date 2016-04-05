@@ -11,13 +11,14 @@
 #define GUARD_VARVALUE_INTERFACE_INCLUDE
 
 #include <varmng/varmng-config.h>
+#include <varmng/varbase_interface.h>
 
 class IVarDef;
 class IVarCtx;
 class VarMng;
 
 //! A variable associated with a value.
-class VARMNG_EXPORT IVarValue {
+class VARMNG_EXPORT IVarValue : public IVarBase {
 
 public:
 
@@ -49,6 +50,12 @@ public:
     bool
     setValue (
             const QString & s_value);
+
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const {
+        return BasicValue;
+    }
 
     /* == == == == == == == == == == == == == == == == == */
     /** @name IVarValue interface
@@ -86,8 +93,12 @@ private:
 
 
 //! Factory class for variables associated with a value.
-class VARMNG_EXPORT IVarValueFactory {
+class VARMNG_EXPORT IVarValueFactory : public IVarBase {
 public:
+
+    //! A numeric value indicating the type of this class.
+    virtual int
+    vmTyId () const;
 
     //! Creates a value associated with a variable definition.
     virtual IVarValue *
