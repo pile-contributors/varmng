@@ -94,7 +94,8 @@ public:
 
     //! Creates and populates a context from environment variables.
     IVarCtx *
-    createEnvVarCtx ();
+    createEnvVarCtx (
+            IVarCtxFactory * factory_override = NULL);
 
     //! Changing the value through the manager also signals the change.
     bool

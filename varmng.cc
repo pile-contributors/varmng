@@ -115,10 +115,15 @@ IVarCtx *VarMng::createVarCtx (
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-IVarCtx * VarMng::createEnvVarCtx ()
+IVarCtx * VarMng::createEnvVarCtx (IVarCtxFactory * factory_override)
 {
-    IVarCtx * ctx = VarFactory::instance ()->createEnvVarCtx (this);
+    if (factory_override == NULL)
+        factory_override = context_factory_;
+    IVarCtx * ctx = factory_override->createVarCtx (
+                this, QLatin1String ("EnvVar"),
+                QObject::tr ("Environment Variables"));
     if (ctx != NULL) {
+        ctx->loadEnvVariables ();
         emit contextCreated (ctx);
     }
     return ctx;
