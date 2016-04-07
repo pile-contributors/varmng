@@ -18,6 +18,7 @@
 #include <QCompleter>
 #include <QLineEdit>
 #include <QTreeView>
+#include <QSortFilterProxyModel>
 
 /**
  * @class VarCtxDeleg
@@ -108,6 +109,16 @@ void VarCtxDeleg::setModelData (
 {
     const VarCtxModel * m = qobject_cast<const VarCtxModel*>(
                 model);
+    if (m == NULL) {
+        const QSortFilterProxyModel * msp = qobject_cast<const QSortFilterProxyModel*>(
+                    model);
+        if (msp == NULL)
+            return;
+        m = qobject_cast<const VarCtxModel*>(
+                    msp->sourceModel ());
+        if (m == NULL)
+            return;
+    }
     VarMng * mng = m->manager ();
     QLineEdit * le = qobject_cast<QLineEdit *>(editor);
 
