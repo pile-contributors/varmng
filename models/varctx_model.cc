@@ -37,7 +37,7 @@ VarCtxModel::VarCtxModel (IVarCtx *context, QObject *parent) :
     context_ (NULL)
 {
     VARMNG_TRACE_ENTRY;
-    installContext (context);
+    installContext (context, false);
     VARMNG_TRACE_EXIT;
 }
 /* ========================================================================= */
@@ -51,6 +51,13 @@ VarCtxModel::~VarCtxModel()
     VARMNG_TRACE_ENTRY;
     uninstallContext ();
     VARMNG_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void VarCtxModel::setContext(IVarCtx *ctx)
+{
+    installContext (ctx);
 }
 /* ========================================================================= */
 

@@ -42,6 +42,11 @@ public:
         return context_;
     }
 
+    //! Change the context.
+    void
+    setContext (
+            IVarCtx * ctx);
+
     //! The manager for the context that we're wrapping.
     VarMng *
     manager () const;
