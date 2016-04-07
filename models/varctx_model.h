@@ -42,6 +42,10 @@ public:
         return context_;
     }
 
+    //! The manager for the context that we're wrapping.
+    VarMng *
+    manager () const;
+
     //! Get the item that is selected in provided view.
     IVarValue *
     getSelectedItem (
@@ -91,6 +95,18 @@ private slots:
     void
     valueChanged (
             IVarValue * val);
+
+protected:
+
+    //! Install the context into this model.
+    void
+    installContext (
+            IVarCtx * ctx,
+            bool model_reset = true);
+
+    //! Remove current context from this model.
+    void
+    uninstallContext ();
 
     /* == == == == == == == == == == == == == == == == */
     /** @name QAbstractItemModel

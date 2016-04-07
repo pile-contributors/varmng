@@ -34,13 +34,10 @@
  */
 VarCtxModel::VarCtxModel (IVarCtx *context, QObject *parent) :
     QAbstractItemModel (parent), IVarBase (),
-    context_ (context)
+    context_ (NULL)
 {
     VARMNG_TRACE_ENTRY;
-    connect(context_->manager (), &VarMng::valueChanged,
-            this, &VarCtxModel::valueChanged);
-    connect(context_->manager (), &VarMng::valueCreated,
-            this, &VarCtxModel::reload);
+    installContext (context);
     VARMNG_TRACE_EXIT;
 }
 /* ========================================================================= */
@@ -52,8 +49,19 @@ VarCtxModel::VarCtxModel (IVarCtx *context, QObject *parent) :
 VarCtxModel::~VarCtxModel()
 {
     VARMNG_TRACE_ENTRY;
-
+    uninstallContext ();
     VARMNG_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+VarMng *VarCtxModel::manager() const
+{
+    if (context_ == NULL) {
+        return NULL;
+    } else {
+        return context_->manager ();
+    }
 }
 /* ========================================================================= */
 
@@ -167,11 +175,46 @@ void VarCtxModel::reload ()
 /* ------------------------------------------------------------------------- */
 void VarCtxModel::valueChanged (IVarValue *val)
 {
-    if (val != NULL) {
-        if (val->context() == context_) {
+    if ((context_ != NULL) && (val != NULL)) {
+        if (val->context () == context_) {
             QModelIndex mi (toIndex (val, 1));
             dataChanged (mi, mi);
         }
+    }
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void VarCtxModel::installContext (IVarCtx *ctx, bool model_reset)
+{
+    if (model_reset)
+        beginResetModel ();
+
+    uninstallContext ();
+
+    context_ = ctx;
+
+    if (context_ != NULL) {
+        connect(context_->manager (), &VarMng::valueChanged,
+                this, &VarCtxModel::valueChanged);
+        connect(context_->manager (), &VarMng::valueCreated,
+                this, &VarCtxModel::reload);
+    }
+
+    if (model_reset)
+        endResetModel ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void VarCtxModel::uninstallContext()
+{
+    if (context_ != NULL) {
+        disconnect(context_->manager (), &VarMng::valueChanged,
+                this, &VarCtxModel::valueChanged);
+        disconnect(context_->manager (), &VarMng::valueCreated,
+                this, &VarCtxModel::reload);
+        context_ = NULL;
     }
 }
 /* ========================================================================= */
@@ -182,6 +225,10 @@ QModelIndex VarCtxModel::index (
 {
     QModelIndex result;
     for (;;) {
+        if (context_ == NULL) {
+            break;
+        }
+
         if (parent.isValid ()) {
             break;
         }
@@ -232,6 +279,9 @@ bool VarCtxModel::removeRows (int row, int count, const QModelIndex &parent)
 {
     bool b_ret = false;
     for (;;) {
+        if (context_ == NULL) {
+            break;
+        }
         if (parent.isValid())
             break;
         if (row < 0)
@@ -257,6 +307,9 @@ bool VarCtxModel::insertRows (int row, int count, const QModelIndex &parent)
 {
     bool b_ret = false;
     for (;;) {
+        if (context_ == NULL) {
+            break;
+        }
         if (parent.isValid())
             break;
         if (row < 0)
@@ -337,6 +390,9 @@ bool VarCtxModel::setData (
         const QModelIndex & idx, const QVariant &value, int role)
 {
     for (;;) {
+        if (context_ == NULL) {
+            break;
+        }
 
         if (!validateIndex (idx))
             break;
@@ -379,7 +435,7 @@ bool VarCtxModel::setData (
 /* ------------------------------------------------------------------------- */
 int VarCtxModel::rowCount (const QModelIndex & parent) const
 {
-    if (parent.isValid ())
+    if ((context_ == NULL) || (parent.isValid ()))
         return 0;
     else
         return context_->valuesCount ();
@@ -432,6 +488,9 @@ bool VarCtxModel::dropMimeData (
         int /*row*/, int /* column */, const QModelIndex &parent)
 {
     bool b_ret = false;
+    if (context_ == NULL) {
+        return false;
+    }
     if (!data || !(action == Qt::CopyAction || action == Qt::MoveAction))
         return false;
     QStringList types = mimeTypes();

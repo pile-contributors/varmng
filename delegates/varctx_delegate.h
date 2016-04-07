@@ -29,7 +29,6 @@ public:
 
     //! Default constructor.
     VarCtxDeleg (
-            IVarCtx * ctx,
             QObject * parent = NULL);
 
     //! Destructor.
@@ -39,7 +38,6 @@ public:
     //! Install this completer to a treeview hosting a context.
     static void
     installInto (
-            IVarCtx * ctx,
             QTreeView * tv);
 
 
@@ -70,8 +68,6 @@ public:
     ///@}
     /* == == == == == == == == == == == == == == == == == */
 
-private:
-    IVarCtx *ctx_;
 };
 
 #endif // GUARD_VARCTX_DELEGATE_INCLUDE

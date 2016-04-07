@@ -27,9 +27,8 @@
 /* ------------------------------------------------------------------------- */
 /**
  */
-VarCtxDeleg::VarCtxDeleg (IVarCtx *ctx, QObject * parent) :
-    QStyledItemDelegate (parent), IVarBase (),
-    ctx_(ctx)
+VarCtxDeleg::VarCtxDeleg (QObject * parent) :
+    QStyledItemDelegate (parent), IVarBase ()
 {
     VARMNG_TRACE_ENTRY;
 
@@ -49,9 +48,9 @@ VarCtxDeleg::~VarCtxDeleg()
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-void VarCtxDeleg::installInto (IVarCtx *ctx, QTreeView *tv)
+void VarCtxDeleg::installInto (QTreeView *tv)
 {
-    tv->setItemDelegateForColumn (0, new VarCtxDeleg (ctx, tv));
+    tv->setItemDelegateForColumn (0, new VarCtxDeleg (tv));
 }
 /* ========================================================================= */
 
@@ -79,7 +78,7 @@ QWidget * VarCtxDeleg::createEditor (
         case 0: {
             QLineEdit * le = qobject_cast<QLineEdit *>(w);
             if (le != NULL) {
-                VarDefModel * mdl = new VarDefModel (ctx_->manager(), w);
+                VarDefModel * mdl = new VarDefModel (m->manager(), w);
                 QCompleter * cpl = new QCompleter (mdl, w);
                 cpl->setCaseSensitivity (Qt::CaseInsensitive);
                 cpl->setCompletionColumn (0);
@@ -107,9 +106,9 @@ void VarCtxDeleg::setModelData (
         QWidget *editor, QAbstractItemModel *model,
         const QModelIndex &index) const
 {
-    /*const VarCtxModel * m = qobject_cast<const VarCtxModel*>(
-                model);*/
-    VarMng * mng = ctx_->manager();
+    const VarCtxModel * m = qobject_cast<const VarCtxModel*>(
+                model);
+    VarMng * mng = m->manager ();
     QLineEdit * le = qobject_cast<QLineEdit *>(editor);
 
     // Create the definition if it does not already exists.
