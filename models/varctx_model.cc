@@ -94,6 +94,8 @@ QModelIndex VarCtxModel::toIndex (IVarValue *item, int column)
 {
     QModelIndex result;
     for (;;) {
+        if (context_ == NULL)
+            break;
         if (item == NULL)
             break;
         int row = context_->valueIndex (item);
@@ -127,6 +129,9 @@ bool VarCtxModel::validateIndex (
 {
     bool b_ret = false;
     for (;;) {
+        if (context_ == NULL)
+            break;
+
         if (!idx.isValid ())
             break;
 
@@ -153,6 +158,9 @@ bool VarCtxModel::validateIndex (
 /* ------------------------------------------------------------------------- */
 QModelIndex VarCtxModel::editItem ()
 {
+    if (context_ == NULL) {
+        return QModelIndex ();
+    }
     IVarValue * vval = context_->firstDegenerate ();
     if (vval == NULL) {
         return QModelIndex ();
@@ -166,7 +174,9 @@ QModelIndex VarCtxModel::editItem ()
 void VarCtxModel::clear ()
 {
     beginResetModel ();
-    context_->clearValues ();
+    if (context_ == NULL) {
+        context_->clearValues ();
+    }
     endResetModel ();
 }
 /* ========================================================================= */
