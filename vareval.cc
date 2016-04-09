@@ -45,10 +45,12 @@ VarEval::~VarEval()
 /* ------------------------------------------------------------------------- */
 VarMng * VarEval::manager () const
 {
-    if (ctx_list_.isEmpty())
-        return NULL;
-    else
-        return ctx_list_.at (0)->manager ();
+    foreach(IVarCtx * iter, ctx_list_) {
+        if (iter != NULL) {
+            return iter->manager ();
+        }
+    }
+    return NULL;
 }
 /* ========================================================================= */
 
@@ -57,10 +59,10 @@ bool VarEval::insertCtx (int idx, IVarCtx *ctx)
 {
     bool b_ret = false;
     for (;;) {
-        if (ctx == NULL)
-            break;
-        if (ctx_list_.contains (ctx))
-            break;
+        if (ctx != NULL) {
+            if (ctx_list_.contains (ctx))
+                break;
+        }
         if ((idx < 0) || (idx >= ctx_list_.count())) {
             ctx_list_.append (ctx);
         } else {
@@ -77,8 +79,10 @@ bool VarEval::insertCtx (int idx, IVarCtx *ctx)
 IVarCtx *VarEval::findCtxInst (const QString &s_name)
 {
     foreach(IVarCtx * iter, ctx_list_) {
-        if (iter->contextName () == s_name) {
-            return iter;
+        if (iter != NULL) {
+            if (iter->contextName () == s_name) {
+                return iter;
+            }
         }
     }
     return NULL;
@@ -90,8 +94,10 @@ int VarEval::findCtx (const QString &s_name)
 {
     int idx = 0;
     foreach(IVarCtx * iter, ctx_list_) {
-        if (iter->contextName () == s_name) {
-            return idx;
+        if (iter != NULL) {
+            if (iter->contextName () == s_name) {
+                return idx;
+            }
         }
         ++idx;
     }
@@ -112,10 +118,12 @@ QList<IVarDef *> VarEval::collectDefinitions ()
     QList<IVarDef *> result;
 
     foreach(IVarCtx * iter, ctx_list_) {
-        foreach(IVarValue * val, iter->contextVariables ()) {
-            IVarDef * def = val->definition();
-            if (!result.contains (def)) {
-                result.append (def);
+        if (iter != NULL) {
+            foreach(IVarValue * val, iter->contextVariables ()) {
+                IVarDef * def = val->definition();
+                if (!result.contains (def)) {
+                    result.append (def);
+                }
             }
         }
     }
@@ -141,9 +149,11 @@ QMap<QString,QString> VarEval::collectValues (
         QString s_result;
         QString s_key = def->varName ();
         foreach(IVarCtx * iter, ctx_list_) {
-            IVarValue * v = iter->value (def);
-            if (v != NULL) {
-                s_result = v->varValue ();
+            if (iter != NULL) {
+                IVarValue * v = iter->value (def);
+                if (v != NULL) {
+                    s_result = v->varValue ();
+                }
             }
         }
         result.insert (s_key, s_result);
