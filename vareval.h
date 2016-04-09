@@ -50,6 +50,12 @@ public:
             int idx,
             IVarCtx * ctx);
 
+    //! Replace a context inside this list.
+    bool replaceCtx(
+            int idx,
+            IVarCtx * ctx,
+            IVarCtx **previous);
+
     //! Find a context given its name.
     IVarCtx *
     findCtxInst (

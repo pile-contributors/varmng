@@ -76,6 +76,32 @@ bool VarEval::insertCtx (int idx, IVarCtx *ctx)
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+bool VarEval::replaceCtx (int idx, IVarCtx *ctx, IVarCtx ** previous)
+{
+    bool b_ret = false;
+    IVarCtx * prev = NULL;
+    for (;;) {
+        if (ctx != NULL) {
+            if (ctx_list_.contains (ctx))
+                break;
+        }
+        if ((idx < 0) || (idx >= ctx_list_.count())) {
+            ctx_list_.append (ctx);
+        } else {
+            prev = ctx_list_.at (idx);
+            ctx_list_[idx] = ctx;
+        }
+        b_ret = true;
+        break;
+    }
+    if (previous != NULL) {
+        *previous = prev;
+    }
+    return b_ret;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 IVarCtx *VarEval::findCtxInst (const QString &s_name)
 {
     foreach(IVarCtx * iter, ctx_list_) {
