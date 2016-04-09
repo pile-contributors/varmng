@@ -370,6 +370,8 @@ IVarValue * VarEvalModel::reloadVariable (
     IVarValue * v = NULL;
     QList<EvalCtx*>  newins;
     foreach(IVarCtx * iter, ctxs) {
+        if (iter == NULL)
+            continue;
         IVarValue * vtmp = iter->value (def);
         if (vtmp != NULL) {
             v = vtmp;
