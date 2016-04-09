@@ -94,6 +94,12 @@ public:
         return EvaluationModel;
     }
 
+    //! Inform the model that a context or value has been modified externally.
+    void
+    contextChanged (
+            IVarCtx * ctx,
+            IVarValue * val = NULL);
+
 public slots:
 
     //! Remove all cached items.

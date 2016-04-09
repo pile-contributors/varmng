@@ -36,6 +36,10 @@ public:
     VarMng *
     manager () const;
 
+    //! Get a context by id.
+    IVarCtx *
+    context (
+            int idx) const;
 
     //! Append a context inside this list.
     bool

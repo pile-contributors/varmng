@@ -451,6 +451,20 @@ void VarEvalModel::setExtended (bool b_extended)
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+/**
+ * For now this method simple calls reload thus generating a full recompute.
+ * In the future it can be smarter.
+ *
+ * @param ctx The context that changed.
+ * @param val A value that belongs to that context (optional)
+ */
+void VarEvalModel::contextChanged (IVarCtx *ctx, IVarValue *val)
+{
+    reload ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 int VarEvalModel::kidsCount (EvalItem *item) const
 {
     if (item == NULL) {
